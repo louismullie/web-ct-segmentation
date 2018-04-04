@@ -12,6 +12,7 @@
   "dependencies": {
     "babel-runtime": "^5.8.0",
     "bower": "^1.7.9",
+    "cors": "^2.8.4",
     "flat-colors": "^3.3.5",
     "vue": "^1.0.18",
     "vue-router": "^0.7.13"
