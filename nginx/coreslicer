@@ -1,0 +1,35 @@
+server {
+  server_name www.coreslicer.com;
+  #listen        80;
+
+  listen        443 ssl;
+
+  ssl_certificate /etc/ssl/certs/ssl-bundle.crt;
+  ssl_certificate_key  /etc/ssl/private/coreslicer.key;
+
+  #ssl_certificate /home/coreslicer/STAR_coreslicer_com/STAR_coreslicer_com.crt;
+  #ssl_certificate_key /home/coreslicer/STAR_coreslicer_com/coreslicer.key;
+
+  client_max_body_size 500M;
+ 
+  location /pipeline {
+        proxy_pass http://localhost:4444;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;  
+  }
+
+  location / {
+        root /home/coreslicer/www/coreslicer/dist;
+        index index.html;
+  }
+ 
+}
+
+server {
+  listen 80;
+  server_name coreslicer.com;
+  return 301 https://coreslicer.com$request_uri;
+}
