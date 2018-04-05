@@ -510,9 +510,6 @@ export default  {
 
 			  // Add DICOM file
 			  let file = cornerstoneWADOImageLoader.fileManager.get($vm.$root.selectedSliceIndex);
-			  fd.append('file', file, 'file.dcm');
-
-			  // Add other options
 				fd.append('x', cursorPos.x)
 			  fd.append('y', cursorPos.y)
 
@@ -1077,19 +1074,10 @@ export default  {
       // Get DICOM for the current slice
       let file = cornerstoneWADOImageLoader.fileManager.get(this.$root.selectedSliceIndex);
 
-      // Add DICOM file
-      fd.append('file', file, 'file.dcm');
-      fd.append('x', '0');
-      fd.append('y', '0');
-			//fd.append('slices', JSON.stringify([
-      //  
-      //  {
-      //    index: 0,
-      //    filename: 'slice_0.png',
-      //    options: { }
-      //  }
-      //
-      //]))
+		  fd.append('slice_0.dcm', file, 'slice_0.dcm');
+
+		  // Add other options
+      fd.append('slices', JSON.stringify([{ index: 0, filename: 'slice_0.dcm' }]))
       
       // Post to route
       let fullUrl = endpoint
@@ -1146,11 +1134,11 @@ export default  {
 
           // If user waited on the layer while segmenting, change tool to brush
           if (_this.currentLayerTypeIndex === switchToIndex) {
-            _this.setCurrentTool(0, layerTypeToSwitchTo, switchToIndex)
+            _this.setCurrentTool(0, layerTypeToSwitchTo + 5, switchToIndex + 5)
           }
 
 					NProgress.done()
-
+ 
           layerType.isSegmenting = false
 
         };
