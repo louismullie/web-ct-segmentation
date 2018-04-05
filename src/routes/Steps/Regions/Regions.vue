@@ -75,61 +75,62 @@
 
 #layers
   ul#layer-list
-    //.LayerGroup
-    //  li.LayerGroupName Smart Regions
-    //
-    //  li(
-    //    v-for='layerType in layerTypes.slice(0, 5)',
-    //    v-bind:class='[$index === currentLayerTypeIndex ? "active" : ""]',
-    //    :data-intro=`$index === 4 ? 'Smart regions can be automatically measured using the magic wand button' : null`,
-    //    data-position='left'
-    //  )
-    //    span.color( v-bind:style="{ backgroundColor: layerType.color }" )
-    //    span.area(
-    //      :data-intro=`$index === 4 ? 'Cross-sectional area of the layer' : null`,
-    //      data-position='top'
-    //    ) {{ layerType.area.toFixed(2) }} cm&sup2;
-    //
-    //    .LayerActions.ui.menu(
-    //      :data-intro=`$index === 4 ? 'Use the brush, erase and magic wand tool to draw a region' : null`,
-    //      data-position='bottom'
-    //    )
-    //      a.popup.icon.item(
-    //        href='#',
-    //        @click.prevent='setCurrentTool(0, layerType, $index)',
-    //        :class='{ active: currentTool === 0 && $index === currentLayerTypeIndex }'
-    //      )
-    //        i.paint.brush.icon
-    //
-    //      a.popup.icon.item(
-    //        href='#',
-    //        @click.prevent='setCurrentTool(1, layerType, $index)',
-    //        :class='{ active: currentTool === 1 && $index === currentLayerTypeIndex }'
-    //      )
-    //        i.erase.icon
-    //
-    //      span.scaler(
-    //        :class=`{ 'is-segmenting': layerType.isSegmenting }`
-    //      )
-    //        a.popup.icon.item(
-    //          href='#',
-    //          @click.prevent=`
-    //            ($index === 0 || $index === 1)
-    //              ? setToolToPicker(layerType, $index)
-    //              : applySegmentationPreset(layerType, $index)
-    //          `,
-    //          :class=`{
-    //            'is-segmenting': layerType.isSegmenting,
-    //            'active': currentTool === 2 && currentLayerTypeIndex === $index && !layerType.isSegmenting
-    //          }`,
-    //          :style=`{ background: layerType.isSegmenting ? layerType.color + ' !important' : null }`
-    //        )
-    //          i.wizard.icon
-    //
-    //    span.LayerName {{ layerType.name }}
-    //
     .LayerGroup
-      li.LayerGroupName Custom Regions
+      li.LayerGroupName Saved Regions
+    
+      li(
+        v-for='layerType in layerTypes.slice(0, 5)',
+        v-bind:class='[$index === currentLayerTypeIndex ? "active" : ""]',
+        :data-intro=`$index === 4 ? 'Smart regions can be automatically measured using the magic wand button' : null`,
+        data-position='left'
+      )
+        span.color( v-bind:style="{ backgroundColor: layerType.color }" )
+        span.area(
+          :data-intro=`$index === 4 ? 'Cross-sectional area of the layer' : null`,
+          data-position='top'
+        ) {{ layerType.area.toFixed(2) }} cm&sup2;
+    
+        .LayerActions.ui.menu(
+          :data-intro=`$index === 4 ? 'Use the brush, erase and magic wand tool to draw a region' : null`,
+          data-position='bottom'
+        )
+          a.popup.icon.item(
+            href='#',
+            @click.prevent='setCurrentTool(0, layerType, $index)',
+            :class='{ active: currentTool === 0 && $index === currentLayerTypeIndex }'
+          )
+            i.paint.brush.icon
+    
+          a.popup.icon.item(
+            href='#',
+            @click.prevent='setCurrentTool(1, layerType, $index)',
+            :class='{ active: currentTool === 1 && $index === currentLayerTypeIndex }'
+          )
+            i.erase.icon
+    
+          span.scaler(
+            :class=`{ 'is-segmenting': layerType.isSegmenting }`
+          )
+            a.popup.icon.item(
+              href='#',
+              @click.prevent=`
+                ($index === 0 || $index === 1)
+                  ? setToolToPicker(layerType, $index)
+                  : applySegmentationPreset(layerType, $index)
+              `,
+              :class=`{
+                'is-segmenting': layerType.isSegmenting,
+                'active': currentTool === 2 && currentLayerTypeIndex === $index && !layerType.isSegmenting
+              }`,
+              :style=`{ background: layerType.isSegmenting ? layerType.color + ' !important' : null }`
+            )
+              i.wizard.icon
+    
+    
+        span.LayerName {{ layerType.name }}
+    
+    .LayerGroup
+      li.LayerGroupName Test New Regions
 
       li.NewLayer(
         :class=`{ active: newLayer.name !== '' }`
@@ -153,12 +154,32 @@
           )
           
         .LayerTypeSelect(v-show=`newLayer.name !== ''`)
-          span.label API endpoint
+          span.label Segmentation type
           input.add(
-            type='text',
-            placeholder='http://your-website.com/endpoint',
-            v-model='newLayer.endpoint',
+            type='radio',
+            id='radioWholeSlice',
+            name='toolType',
+            value='0',
+            v-model='newLayer.endpointToolType',
           )
+          label.add(
+            for='radioWholeSlice'
+          )
+            | Whole slice
+            
+          
+          input.add(
+            type='radio',
+            id='radioPointAndClick',
+            name='toolType',
+            value='1',
+            v-model='newLayer.endpointToolType',
+          )
+          
+          label.add(
+            for='radioPointAndClick'
+          )
+            | Point and click
           
         .LayerTypeSelect(v-show=`newLayer.name !== ''`)
           span.label Threshold Type
@@ -204,11 +225,30 @@
             :class='{ active: currentTool === 1 && $index === currentLayerTypeIndex - 5 }'
           )
             i.erase.icon
+          
+          span.scaler(
+            :class=`{ 'is-segmenting': layerType.isSegmenting }`
+          )
+            a.popup.icon.item(
+              href='#',
+              @click.prevent=`
+                (newLayer.toolType == '1')
+                  ? setToolToPicker(layerType, $index, newLayer.endpoint)
+                  : applySegmentationPreset(layerType, $index, newLayer.endpoint)
+              `,
+              :class=`{
+                'is-segmenting': layerType.isSegmenting,
+                'active': currentTool === 2 && currentLayerTypeIndex === $index && !layerType.isSegmenting
+              }`,
+              :style=`{ background: layerType.isSegmenting ? layerType.color + ' !important' : null }`
+            )
+              i.wizard.icon
 
           a.popup.icon.item(
             href='#',
             @click.prevent='deleteLayer($index + 5)'
           )
+          
             i.trash.icon
 
         span.LayerName {{ layerType.name }}
@@ -335,48 +375,7 @@ export default  {
         },
       ],
 
-      layerTypes: [
-        {
-          id: 'left-psoas',
-          name: 'Left Psoas',
-          color: colors[0],
-          threshold: [-29.0, 150.0],
-          area: 0.00,
-          isSegmenting: false
-        },
-        {
-          id: 'right-psoas',
-          name: 'Right Psoas',
-          color: colors[1],
-          threshold: [-29.0, 150.0],
-          area: 0.00,
-          isSegmenting: false
-        },
-        {
-          id: 'wall-muscle',
-          name: 'Wall Muscle',
-          color: colors[2],
-          threshold: [-29.0, 150.0],
-          area: 0.00,
-          isSegmenting: false
-        },
-        {
-          id: 'subcutaneous-fat',
-          name: 'Subcutaneous Fat',
-          color: colors[3],
-          threshold: [-190.0, -30.0],
-          area: 0.00,
-          isSegmenting: false
-        },
-        {
-          id: 'visceral-fat',
-          name: 'Visceral Fat',
-          color: colors[4],
-          threshold: [-190.0, -30.0],
-          area: 0.00,
-          isSegmenting: false
-        },
-      ]
+      layerTypes: JSON.parse(localStorage.getItem('layerTypes'))
 
     }
   },
@@ -882,8 +881,10 @@ export default  {
 
     },
 
-    setToolToPicker: function (layerType, layerTypeIndex) {
+    setToolToPicker: function (layerType, layerTypeIndex, endpoint) {
 
+      console.log('picker', endpoint)
+      
       // Do not trigger multiple picker watchers for the same layer type
       if (layerType.isSegmenting) return false
 
@@ -1030,18 +1031,17 @@ export default  {
     },
 
 
-    applySegmentationPreset : function (layerTypeToSwitchTo, switchToIndex) {
+    applySegmentationPreset : function (layerTypeToSwitchTo, switchToIndex, endpoint) {
 
 			let _this = this;
 
 			NProgress.start()
-
+      
       // Do not switch or process a segmenting layer
       if (layerTypeToSwitchTo.isSegmenting) return
       this.setActiveLayerType(layerTypeToSwitchTo, switchToIndex)
 
       // Set tool to picker
-      console.log({ layerTypeToSwitchTo, switchToIndex })
       this.setCurrentTool(2, layerTypeToSwitchTo, switchToIndex)
       layerTypeToSwitchTo.isSegmenting = true
 
@@ -1062,32 +1062,46 @@ export default  {
       // Get layer script
       let layerScript = scriptMap[lowerCaseLayerName];
 
+      // http://localhost:8080/endpoint
+      
       // Get active canvas
       let canvas = Tegaki.layers[Tegaki.activeLayer].canvas,
           ctx = canvas.getContext('2d');
 
       // Create request
-      let xhr = new XMLHttpRequest(),
-          fd  = new FormData();
+      let xhr = new XMLHttpRequest()
+      
+      // Create form data
+      let fd  = new FormData()
+    
+      // Get DICOM for the current slice
+      let file = cornerstoneWADOImageLoader.fileManager.get(this.$root.selectedSliceIndex);
 
       // Add DICOM file
-      let file = cornerstoneWADOImageLoader.fileManager.get(this.$root.selectedSliceIndex);
       fd.append('file', file, 'file.dcm');
-
-      // Add other options
-			fd.append('x', '0');
-      fd.append('y', '0')
-
+      fd.append('x', '0');
+      fd.append('y', '0');
+			//fd.append('slices', JSON.stringify([
+      //  
+      //  {
+      //    index: 0,
+      //    filename: 'slice_0.png',
+      //    options: { }
+      //  }
+      //
+      //]))
+      
       // Post to route
-      let baseUrl = '/pipeline',
-          fullUrl = baseUrl + '/' + layerScript;
-
+      let fullUrl = endpoint
+      
       xhr.open('POST', fullUrl , true);
       xhr.responseType = 'blob';
-
+      
       // When POST succeeded
       xhr.onload = function(evt) {
 
+        console.log(evt.target.response)
+        
         // Get URL to PNG sent by server
         var url = window.URL.createObjectURL(evt.target.response);
         var img = new Image();
@@ -1096,22 +1110,22 @@ export default  {
         img.onload = function () {
 
           // Create in memory canvas for color replacement
-          var imgCanvas = document.createElement("canvas");
-              imgCanvas.width = this.width;
-              imgCanvas.height = this.height;
+          let imgCanvas = document.createElement("canvas")
+          imgCanvas.width = this.width,
+          imgCanvas.height = this.height
 
           // Copy the image contents to the canvas
-          var imgCtx = canvas.getContext("2d");
-              imgCtx.drawImage(this, 0, 0);
+          let imgCtx = canvas.getContext("2d")
+          imgCtx.drawImage(this, 0, 0)
 
-          let imageData = imgCtx.getImageData(0, 0, this.width, this.height),
-              imagePixelArray = imageData.data;
+          let imageData = imgCtx.getImageData(0, 0, this.width, this.height)
+          let imagePixelArray = imageData.data
 
-          let targetData = ctx.getImageData(0, 0, this.width, this.height),
-              targetPixelArray = targetData.data;
+          let targetData = ctx.getImageData(0, 0, this.width, this.height)
+          let targetPixelArray = targetData.data
 
           // 4 components - red, green, blue and alpha
-          var length = targetPixelArray.length;
+          let length = targetPixelArray.length
 
           // Iterate and apply layer color
           for (var i = 3; i < length; i+= 4) {
@@ -1147,10 +1161,9 @@ export default  {
 
       };
 
-      // Send request with form data
-      xhr.send(fd);
-
-
+      
+      xhr.send(fd)
+      
     },
 
     save: function () {

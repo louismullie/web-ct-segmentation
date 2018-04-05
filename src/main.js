@@ -1,6 +1,9 @@
 // Import global scripts
 import './scripts/app.js'
 
+// Import config
+import './scripts/config.js'
+
 // Import Vue and middleware
 import Vue from 'vue'
 import VueRouter from 'vue-router'
