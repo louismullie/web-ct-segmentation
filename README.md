@@ -67,7 +67,7 @@ npm run build
 
 The `files` field of the FormData object contains the list of files, while the slices object contains a string-encoded JSON, which has the following structure: 
 
-```json
+```
 {
 	"slices": [ {
 		“index”: 0,
@@ -79,7 +79,7 @@ The `files` field of the FormData object contains the list of files, while the s
 
 If the “point and click” option is set when creating the tool, the “options” dictionary will be filled with the x and y position of the cursor when the canvas was clicked, e.g. 
 
-```json
+```
 “options”: { x: 34, y: 352 } 
 ```
 
