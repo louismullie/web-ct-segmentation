@@ -60,9 +60,13 @@ npm run build
 
 ```
 
+<<<<<<< HEAD
 ## Plugin API
 
 ### API specification
+=======
+## Building plugins
+>>>>>>> d8831f559a67e4737483789619ae1f1b78cf2cdc
 
 The `files` field of the FormData object contains the list of files, while the slices object contains a string-encoded JSON, which has the following structure: 
 
@@ -82,6 +86,7 @@ If the “point and click” option is set when creating the tool, the “option
 “options”: { x: 34, y: 352 } 
 ```
 
+<<<<<<< HEAD
 ### Simple plugin example
 
 The following demonstrates an example plugin in Python:
@@ -140,6 +145,8 @@ if __name__ == '__main__':
     app.run(host='0.0.0.0', port=port)
 ```
 
+=======
+>>>>>>> d8831f559a67e4737483789619ae1f1b78cf2cdc
 ## User interface
 
 On any screen, tap the "?" button at the bottom-left of the interface to display additional tools and information.
