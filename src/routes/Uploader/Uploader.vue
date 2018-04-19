@@ -34,20 +34,31 @@
       | CoreSlicer is designed for Google Chrome. Other browsers are not supported.<br> If you wish use CoreSlicer, please follow this #[a(href='https://www.google.com/chrome/' target='_blank') link] to install Chrome.
 
     .ui.text.container( v-if='isChrome' )
-      a( href = 'https://coreslicer.com/static/video.html' ).ui.right.labeled.icon.small.grey.button
-        i.video.play.icon
-        |View video tutorial
+      p CoreSlicer is intended for research and educational purposes only.
+    //  a( href = 'https://coreslicer.com/static/video.html' ).ui.right.labeled.icon.small.grey.button
+    //    i.video.play.icon
+    //    |View video tutorial
         
   #cs-footer-divider.ui.divider.inverted
 
   #cs-footer.ui.text.container
-    //- .ui.inverted.secondary.menu.center
-    //-   a.item( v-link = "{ path: '/' }" ) About
-    //-   a.item( v-link = "{ path: '/faq' }" ) FAQ
-    //-   a.item( v-link = "{ path: '/contact' }" ) Contact
-    //-   a.item( v-link = "{ path: '/disclaimer' }" ) Disclaimer
+    
+    .ui.inverted.secondary.menu.center
+      a.item( href = 'https://coreslicer.com/static/video.html' ) Video tutorial
+      a.item( 
+        href = '#'
+        @click.prevent = 'openPrivacyModal'
+      ) Privacy policy
+      a.item( 
+        href = '#'
+        @click.prevent = 'openTermsModal'
+      ) Terms of use
 
+    
     p &copy; Jonathan Afilalo and Louis Mullie, 2014-2017
+                      
+modal(name='hello-world') Testing
+    
 
 //- Hidden file dialog
 
@@ -60,7 +71,7 @@ input#fileDialog(
 )
 
 </template>
-
+ 
 <script>
 
 import loadDataTransferItems from './loadDataTransferItems.js'
@@ -214,6 +225,16 @@ export default {
 
       this.processFilePromise(filePromise)
 
+    },
+    
+    //
+    
+    openTermsModal () {
+      this.$modal.show('hello-world', { foo: 'bar' })
+    },
+    
+    openPrivacyModal () {
+      this.$modal.show('hello-world', { foo: 'bar' })
     }
 
   }
@@ -264,7 +285,7 @@ export default {
 }
 
 #cs-footer-divider {
-  margin: 3rem 0 !important;
+  margin: 2rem 0 !important;
 }
 
 #cs-footer {
