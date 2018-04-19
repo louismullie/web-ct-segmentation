@@ -780,6 +780,7 @@ export default  {
     createLayer: function () {
 
       const name = this.newLayer.name
+      const endpoint = this.newLayer.endpoint
       const threshold = this.baseLayerTypes[this.newLayer.baseLayerTypeIndex].threshold
 
       const id = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z\-]/g, '').trim()
@@ -800,6 +801,7 @@ export default  {
         name,
         color,
         threshold,
+        endpoint,
         area: 0.00,
         isSegmenting: false
       }
@@ -875,16 +877,7 @@ export default  {
 			let scaleFactor = Tegaki.scaleFactor;
 			cursorPos.x = parseInt(cursorPos.x / scaleFactor);
 			cursorPos.y = parseInt(cursorPos.y / scaleFactor);
-
-      // Map layer name (lower case) to script
-      let scriptMap = {
-        'left psoas': 'region_grow_psoas',
-        'right psoas': 'region_grow_psoas'
-      };
-
-      // Get layer script
-      let layerScript = scriptMap[lowerCaseLayerName];
-
+      
       // Mark layerType as loading
       layerType.isSegmenting = true;
 
@@ -905,8 +898,7 @@ export default  {
       fd.append('y', cursorPos.y)
 
       // Post to route
-      let baseUrl = '/pipeline',
-          fullUrl = baseUrl + '/' + layerScript;
+      let fullUrl = layerType.endpoint;
 
       xhr.open('POST', fullUrl , true);
       xhr.responseType = 'blob';
