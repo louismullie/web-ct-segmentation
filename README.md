@@ -19,7 +19,6 @@ CoreSlicer is designed for and optimized for Google Chrome. Other browsers are n
 
 Analytic morphomics, or more simply, “morphomics,” refers to the measurement of specific biomarkers of body composition from medical imaging, most commonly computed tomography (CT) images. A typical measurement workflow consists in selecting a reference anatomical level (e.g. the level of the 4th lumbar vertebra) and performing morphometric measurements on the corresponding axial image (Figure 1).
 
-
 ## How to install
 
 First, ensure that [NVM](https://github.com/creationix/nvm) and [Bower](https://bower.io/) are installed on your system:
@@ -57,10 +56,66 @@ cd coreslicer && npm run dev
 To build the application as a stand-alone HTML/JS package, run:
 
 ```bash
-
-# build for production with minification
 npm run build
 
+```
+
+## Plugin API
+
+The following demonstrates an example plugin in Python:
+
+````
+from flask import Flask, request, send_file
+import numpy as np, os, json
+from scipy.misc import imsave
+from coreslicer import read_dcm
+
+app = Flask(__name__)
+
+APP_ROOT = os.path.dirname(os.path.abspath(__file__))
+UPLOAD_FOLDER = os.path.join(APP_ROOT, '../tmp/coreslicer')
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+def import_slice_file(request, index, upload_folder):
+  
+  slices = json.loads(request.form['slices'])
+  slice_name = slices[index]['filename']
+  
+  slices_data = request.files
+  
+  slice_data = slices_data[slice_name]
+  
+  slice_filename = os.path.join(upload_folder, slice_data.filename)
+  slice_data.save(slice_filename)
+  slice_data.stream.seek(0)
+  
+  return slice_filename
+  
+def export_slice_file(mask, upload_folder):
+  
+  image_filename = os.path.join(upload_folder, 'result.png')
+  imsave(image_filename, mask)
+
+  return image_filename
+  
+@app.route('/endpoint', methods = ['POST'])
+  
+def segmentation_function():
+  
+  slice_filename = import_slice_file(request, 0, app.config['UPLOAD_FOLDER'])
+  
+  dcm_image, grayscale, pixel_spacing = read_dcm(slice_filename)
+
+  mask = np.zeros((dcm_image.shape[0], dcm_image.shape[1], 4))
+  mask[dcm_image > 0] = (1, 1, 1, 1)
+
+  return send_file(
+    export_slice_file(mask, app.config['UPLOAD_FOLDER']),
+    attachment_filename='result.png', mimetype='image/png')
+
+if __name__ == '__main__':
+    port = 8000
+    app.run(host='0.0.0.0', port=port)
 ```
 
 ## User interface

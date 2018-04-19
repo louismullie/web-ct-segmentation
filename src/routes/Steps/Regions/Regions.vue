@@ -32,11 +32,11 @@
     )
       i.repeat.icon
 
-    a.popup.icon.item(
-      href='#',
-      @click.prevent='magicSegmentation'
-    )
-      i.lightning.icon
+    //a.popup.icon.item(
+    //  href='#',
+    //  @click.prevent='magicSegmentation'
+    //)
+    //  i.lightning.icon
 
   .BrushSize.ui.menu.right.floated(
     data-intro="Change your brush size",
@@ -76,10 +76,13 @@
 #layers
   ul#layer-list
     .LayerGroup
-      li.LayerGroupName Saved Regions
+      li.LayerGroupName(
+        v-bind:class='[layerTypes.length == 0 ? "hidden" : "visible"]',
+              
+      ) Saved Regions
     
       li(
-        v-for='layerType in layerTypes.slice(0, 5)',
+        v-for='layerType in layerTypes',
         v-bind:class='[$index === currentLayerTypeIndex ? "active" : ""]',
         :data-intro=`$index === 4 ? 'Smart regions can be automatically measured using the magic wand button' : null`,
         data-position='left'
@@ -125,7 +128,14 @@
               :style=`{ background: layerType.isSegmenting ? layerType.color + ' !important' : null }`
             )
               i.wizard.icon
+
+            a.popup.icon.item(
+              href='#',
+              @click.prevent='deleteLayer($index)'
+            )
     
+              i.trash.icon
+
     
         span.LayerName {{ layerType.name }}
     
@@ -146,7 +156,7 @@
         )
         
         .LayerTypeSelect(v-show=`newLayer.name !== ''`)
-          span.label API endpoint URL
+          span.label Enter plugin callback URL
           input.add(
             type='text',
             placeholder='http://your-website.com/endpoint',
@@ -154,18 +164,20 @@
           )
           
         .LayerTypeSelect(v-show=`newLayer.name !== ''`)
-          span.label Segmentation type
+          span.label(style='float: none') Select plugin trigger
+          br
           input.add(
             type='radio',
             id='radioWholeSlice',
             name='toolType',
             value='0',
+            style='width: auto',
             v-model='newLayer.endpointToolType',
           )
           label.add(
             for='radioWholeSlice'
           )
-            | Whole slice
+            | &nbsp; Whole slice &nbsp; &nbsp;
             
           
           input.add(
@@ -173,13 +185,14 @@
             id='radioPointAndClick',
             name='toolType',
             value='1',
+            style='width: auto',
             v-model='newLayer.endpointToolType',
           )
           
           label.add(
             for='radioPointAndClick'
           )
-            | Point and click
+            | &nbsp; Point and click
           
         .LayerTypeSelect(v-show=`newLayer.name !== ''`)
           span.label Threshold Type
@@ -196,62 +209,7 @@
             @click.prevent='createLayer'
           ) Create region
 
-      li(
-        v-for='layerType in layerTypes.slice(5)',
-        v-bind:class='[$index === currentLayerTypeIndex + 4 ? "active" : ""]',
-        :data-intro=`$index === 4 ? 'Smart regions can be automatically measured using the magic wand button' : null`,
-        data-position='left'
-      )
-        span.color( v-bind:style="{ backgroundColor: layerType.color }" )
-        span.area(
-          :data-intro=`$index === 4 ? 'Cross-sectional area of the layer' : null`,
-          data-position='top'
-        ) {{ layerType.area.toFixed(2) }} cm&sup2;
 
-        .LayerActions.ui.menu(
-          :data-intro=`$index === 4 ? 'Use the brush, erase and magic wand tool to draw a region' : null`,
-          data-position='bottom'
-        )
-          a.popup.icon.item(
-            href='#',
-            @click.prevent='setCurrentTool(0, layerType, $index + 5)',
-            :class='{ active: currentTool === 0 && $index === currentLayerTypeIndex - 5 }'
-          )
-            i.paint.brush.icon
-
-          a.popup.icon.item(
-            href='#',
-            @click.prevent='setCurrentTool(1, layerType, $index + 5)',
-            :class='{ active: currentTool === 1 && $index === currentLayerTypeIndex - 5 }'
-          )
-            i.erase.icon
-          
-          span.scaler(
-            :class=`{ 'is-segmenting': layerType.isSegmenting }`
-          )
-            a.popup.icon.item(
-              href='#',
-              @click.prevent=`
-                (newLayer.toolType == '1')
-                  ? setToolToPicker(layerType, $index, newLayer.endpoint)
-                  : applySegmentationPreset(layerType, $index, newLayer.endpoint)
-              `,
-              :class=`{
-                'is-segmenting': layerType.isSegmenting,
-                'active': currentTool === 2 && currentLayerTypeIndex === $index && !layerType.isSegmenting
-              }`,
-              :style=`{ background: layerType.isSegmenting ? layerType.color + ' !important' : null }`
-            )
-              i.wizard.icon
-
-          a.popup.icon.item(
-            href='#',
-            @click.prevent='deleteLayer($index + 5)'
-          )
-          
-            i.trash.icon
-
-        span.LayerName {{ layerType.name }}
 
 #keyboard-shortcuts-modal.ui.modal.small
   .shortcuts-container
@@ -422,11 +380,12 @@ export default  {
     // Drawing canvas settings
     const [imageW, imageH] = [sliceImg.width, sliceImg.height];
     const viewW = 800;
-    const viewH = Math.min(viewW * sliceImg.height / sliceImg.width, viewW * 3/4); // max out at 4:3
+    const viewH = Math.min(viewW * sliceImg.height / sliceImg.width, viewW * 3/4);
+    // max out at 4:3
 
     const scaleMin = viewW / imageW // if image is larger than viewport, don't resize
-    const scaleMax = 2; // To ensure brush doesn't have to go > 128px
-    const scaleStep = 0.1;
+    const scaleMax = 2 // To ensure brush doesn't have to go > 128px
+    const scaleStep = 0.1
 
     // Initialize Tegaki
     Tegaki.container = document.querySelector('#tegaki-container');
@@ -501,6 +460,7 @@ export default  {
 
 				NProgress.start()
 			  // Get active canvas
+          console.log(Tegaki.activeLayer)
 			  let canvas = Tegaki.layers[Tegaki.activeLayer].canvas,
 			      ctx = canvas.getContext('2d');
 
@@ -768,7 +728,7 @@ export default  {
 
   computed: {
     layerTypesGroups () {
-      return [this.layerTypes.slice(0, 5), this.layerTypes.slice(5)]
+      return [this.layerTypes, this.layerTypes]
     },
     brushSizeScaled: {
       get () {
@@ -846,6 +806,9 @@ export default  {
 
       newLayerType.tegakiLayerIndex = Tegaki.addLayer(newLayerType.id, 0.5)
       this.layerTypes.push(newLayerType)
+        
+      // Commit the new layer type to memory
+      localStorage.setItem("layerTypes", JSON.stringify(this.layerTypes))
 
       // Reset new Layer
       this.newLayer.name = ''
@@ -1028,7 +991,7 @@ export default  {
     },
 
 
-    applySegmentationPreset : function (layerTypeToSwitchTo, switchToIndex, endpoint) {
+    applySegmentationPreset : function (layerTypeToSwitchTo, switchToIndex) {
 
 			let _this = this;
 
@@ -1047,20 +1010,6 @@ export default  {
       let layerColor = this.hex2rgb(this.layerTypes[this.currentLayerTypeIndex].color)
       let lowerCaseLayerName = layerType.name.toLowerCase();
 
-      // Map layer name (lower case) to script
-      let scriptMap = {
-        'left psoas': null,
-        'right psoas': null,
-        'wall muscle': 'segment_lumbar_muscle',
-        'subcutaneous fat': 'segment_subq_fat',
-        'visceral fat': 'segment_visceral_fat'
-      };
-
-      // Get layer script
-      let layerScript = scriptMap[lowerCaseLayerName];
-
-      // http://localhost:8080/endpoint
-      
       // Get active canvas
       let canvas = Tegaki.layers[Tegaki.activeLayer].canvas,
           ctx = canvas.getContext('2d');
@@ -1080,7 +1029,7 @@ export default  {
       fd.append('slices', JSON.stringify([{ index: 0, filename: 'slice_0.dcm' }]))
       
       // Post to route
-      let fullUrl = endpoint
+      let fullUrl = layerType.endpoint
       
       xhr.open('POST', fullUrl , true);
       xhr.responseType = 'blob';
@@ -1134,7 +1083,7 @@ export default  {
 
           // If user waited on the layer while segmenting, change tool to brush
           if (_this.currentLayerTypeIndex === switchToIndex) {
-            _this.setCurrentTool(0, layerTypeToSwitchTo + 5, switchToIndex + 5)
+            _this.setCurrentTool(0, layerTypeToSwitchTo, switchToIndex)
           }
 
 					NProgress.done()
@@ -1171,7 +1120,7 @@ export default  {
 
 
       // Highly dangerous magic numbers here
-      for (let layer of this.layerTypes.slice(5)) {
+      for (let layer of this.layerTypes) {
         columnIndices.push(layer.name)
       }
 
@@ -1198,7 +1147,7 @@ export default  {
       }
 
       // Highly dangerous magic numbers here
-      for (let layer of this.layerTypes.slice(5)) {
+      for (let layer of this.layerTypes) {
         row[j] = layer.area;
         j += 1
       }
@@ -1222,12 +1171,7 @@ export default  {
       for (let layer of this.layerTypes) {
 
         let layerName = layer.name
-        let shortName = longToShortName[layerName]
-
-        if (!shortName) {
-          let id = layerName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z\-]/g, '').trim()
-          shortName = id
-        }
+        let shortName = layerName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z\-]/g, '').trim()
 
         let currentLayer = Tegaki.layers.filter(l => l.name == shortName)
         let layerCanvas = currentLayer[0].canvas
@@ -1431,9 +1375,6 @@ main {
         display: flex;
 
         &.is-segmenting {
-          transform: scale(0.6);
-          opacity: .8;
-
         }
       }
 
@@ -1512,7 +1453,7 @@ main {
 
           &.is-segmenting {
             border-radius: 0 !important;
-            animation: sk-rotateplane 1.2s infinite ease-in-out;
+            animation: sk-circleFadeDelay 1.2s infinite ease-in-out both;
             i {
               visibility: hidden;
             }
@@ -1727,5 +1668,117 @@ input[type="range"] {
     -webkit-transform: perspective(120px) rotateX(-180deg) rotateY(-179.9deg);
   }
 }
+
+.sk-fading-circle {
+  margin: 40px auto;
+  width: 40px;
+  height: 40px;
+  position: relative; }
+  .sk-fading-circle .sk-circle {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0; }
+  .sk-fading-circle .sk-circle:before {
+    content: '';
+    display: block;
+    margin: 0 auto;
+    width: 15%;
+    height: 15%;
+    background-color: #333;
+    border-radius: 100%;
+    -webkit-animation: sk-circleFadeDelay 1.2s infinite ease-in-out both;
+            animation: sk-circleFadeDelay 1.2s infinite ease-in-out both; }
+  .sk-fading-circle .sk-circle2 {
+    -webkit-transform: rotate(30deg);
+        -ms-transform: rotate(30deg);
+            transform: rotate(30deg); }
+  .sk-fading-circle .sk-circle3 {
+    -webkit-transform: rotate(60deg);
+        -ms-transform: rotate(60deg);
+            transform: rotate(60deg); }
+  .sk-fading-circle .sk-circle4 {
+    -webkit-transform: rotate(90deg);
+        -ms-transform: rotate(90deg);
+            transform: rotate(90deg); }
+  .sk-fading-circle .sk-circle5 {
+    -webkit-transform: rotate(120deg);
+        -ms-transform: rotate(120deg);
+            transform: rotate(120deg); }
+  .sk-fading-circle .sk-circle6 {
+    -webkit-transform: rotate(150deg);
+        -ms-transform: rotate(150deg);
+            transform: rotate(150deg); }
+  .sk-fading-circle .sk-circle7 {
+    -webkit-transform: rotate(180deg);
+        -ms-transform: rotate(180deg);
+            transform: rotate(180deg); }
+  .sk-fading-circle .sk-circle8 {
+    -webkit-transform: rotate(210deg);
+        -ms-transform: rotate(210deg);
+            transform: rotate(210deg); }
+  .sk-fading-circle .sk-circle9 {
+    -webkit-transform: rotate(240deg);
+        -ms-transform: rotate(240deg);
+            transform: rotate(240deg); }
+  .sk-fading-circle .sk-circle10 {
+    -webkit-transform: rotate(270deg);
+        -ms-transform: rotate(270deg);
+            transform: rotate(270deg); }
+  .sk-fading-circle .sk-circle11 {
+    -webkit-transform: rotate(300deg);
+        -ms-transform: rotate(300deg);
+            transform: rotate(300deg); }
+  .sk-fading-circle .sk-circle12 {
+    -webkit-transform: rotate(330deg);
+        -ms-transform: rotate(330deg);
+            transform: rotate(330deg); }
+  .sk-fading-circle .sk-circle2:before {
+    -webkit-animation-delay: -1.1s;
+            animation-delay: -1.1s; }
+  .sk-fading-circle .sk-circle3:before {
+    -webkit-animation-delay: -1s;
+            animation-delay: -1s; }
+  .sk-fading-circle .sk-circle4:before {
+    -webkit-animation-delay: -0.9s;
+            animation-delay: -0.9s; }
+  .sk-fading-circle .sk-circle5:before {
+    -webkit-animation-delay: -0.8s;
+            animation-delay: -0.8s; }
+  .sk-fading-circle .sk-circle6:before {
+    -webkit-animation-delay: -0.7s;
+            animation-delay: -0.7s; }
+  .sk-fading-circle .sk-circle7:before {
+    -webkit-animation-delay: -0.6s;
+            animation-delay: -0.6s; }
+  .sk-fading-circle .sk-circle8:before {
+    -webkit-animation-delay: -0.5s;
+            animation-delay: -0.5s; }
+  .sk-fading-circle .sk-circle9:before {
+    -webkit-animation-delay: -0.4s;
+            animation-delay: -0.4s; }
+  .sk-fading-circle .sk-circle10:before {
+    -webkit-animation-delay: -0.3s;
+            animation-delay: -0.3s; }
+  .sk-fading-circle .sk-circle11:before {
+    -webkit-animation-delay: -0.2s;
+            animation-delay: -0.2s; }
+  .sk-fading-circle .sk-circle12:before {
+    -webkit-animation-delay: -0.1s;
+            animation-delay: -0.1s; }
+
+@-webkit-keyframes sk-circleFadeDelay {
+  0%, 39%, 100% {
+    opacity: 0; }
+  40% {
+    opacity: 1; } }
+
+@keyframes sk-circleFadeDelay {
+  0%, 39%, 100% {
+    opacity: 0; }
+  40% {
+    opacity: 1; } }
+
 
 </style>

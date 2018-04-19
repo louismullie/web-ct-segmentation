@@ -144,7 +144,15 @@ function sortSerieSlices (serieSlicesArray) {
   
   // Get the image orientation and patient position from any slice
   let firstSliceData = serieSlicesArray[0].data
-  let imageOrientationPatient = firstSliceData.string('x00200037').split('\\')
+ 
+  let imageOrientationPatient = firstSliceData.string('x00200037')
+  
+  if (imageOrientationPatient == undefined) {
+    console.log(imageOrientationPatient)
+  } else {
+    imageOrientationPatient = imageOrientationPatient.split('\\')
+  }
+  
   let patientPosition = firstSliceData.string('x00185100')
   
   // Calculate Z vector by cross product of X and Y vectors
