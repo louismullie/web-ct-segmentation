@@ -148,7 +148,7 @@ function sortSerieSlices (serieSlicesArray) {
   let imageOrientationPatient = firstSliceData.string('x00200037')
   
   if (imageOrientationPatient == undefined) {
-    console.log(imageOrientationPatient)
+    return serieSlicesArray
   } else {
     imageOrientationPatient = imageOrientationPatient.split('\\')
   }
