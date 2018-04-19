@@ -62,9 +62,31 @@ npm run build
 
 ## Plugin API
 
+### API specification
+
+The `files` field of the FormData object contains the list of files, while the slices object contains a string-encoded JSON, which has the following structure: 
+
+```
+{
+	"slices": [ {
+		“index”: 0,
+		“filename”: “slice_0.png”,
+		“options”: { } 
+	}]
+}
+```
+
+If the “point and click” option is set when creating the tool, the “options” dictionary will be filled with the x and y position of the cursor when the canvas was clicked, e.g. 
+
+```
+“options”: { x: 34, y: 352 } 
+```
+
+### Simple plugin example
+
 The following demonstrates an example plugin in Python:
 
-````
+```python
 from flask import Flask, request, send_file
 import numpy as np, os, json
 from scipy.misc import imsave
@@ -134,6 +156,9 @@ On any screen, tap the "?" button at the bottom-left of the interface to display
 
 ![image](https://user-images.githubusercontent.com/681636/38292032-3a339468-37b0-11e8-8a48-ad6fb9b37376.png)
 
+## User agreement
+
+CoreSlicer is freely available for academic research. It may not be used for commercial or clinical applications.
 
 ## License
 
