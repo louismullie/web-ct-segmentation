@@ -7,9 +7,11 @@ import './scripts/config.js'
 // Import Vue and middleware
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import VModal from 'vue-js-modal'
 
 // Plug middleware
 Vue.use(VueRouter)
+Vue.use(VModal)
 
 // Load app and components
 import App from './App'
