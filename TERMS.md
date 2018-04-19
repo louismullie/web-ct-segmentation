@@ -1,0 +1,2 @@
+# CoreSlicer: Terms of Use
+
