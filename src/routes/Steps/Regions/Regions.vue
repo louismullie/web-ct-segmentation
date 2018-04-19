@@ -17,7 +17,7 @@
 
 #toolbar
   .ui.menu.right.floated(
-    data-intro="Undo, redo, and apply smart segmentation",
+    data-intro="Undo and redo",
     data-position='bottom'
   )
     a.popup.icon.item(
@@ -672,14 +672,26 @@ export default  {
       data = dest.data,
       len = data.length;
 
-      let totalPixels = 0;
-
+      let totalPixels = 0
+      let totalHU = 0
+        
       for (i = 3; i < len; i += 4) {
-        if (data[i] > 0) totalPixels++;
+        if (data[i] > 0) {
+          totalPixels++
+          totalHU += (Tegaki.selectedSlicePixelData[Math.floor(i/4)] + 
+                     Tegaki.selectedSliceRescaleIntercept)
+        }
       }
-
-      let area = totalPixels * Tegaki.selectedSlicePixelSpacing / 100;
-      this.layerTypes[this.currentLayerTypeIndex].area = area;
+      
+      let area = totalPixels * Tegaki.selectedSlicePixelSpacing / 100
+      let meanHU = totalHU / totalPixels
+        
+      console.log(totalHU, totalPixels, meanHU)
+      
+      let layerType = this.layerTypes[this.currentLayerTypeIndex]
+        
+      layerType.area = area;
+      layerType.meanHU = meanHU;
 
     }
 
@@ -699,13 +711,22 @@ export default  {
         len = data.length;
 
         let totalPixels = 0;
+        let totalHU = 0
 
         for (i = 3; i < len; i += 4) {
-          if (data[i] > 0) totalPixels++;
+          if (data[i] > 0) {
+            totalPixels++;
+            totalHU += (Tegaki.selectedSlicePixelData[Math.floor(i/4)] + 
+                       Tegaki.selectedSliceRescaleIntercept)
+          }
         }
 
         let area = totalPixels * Tegaki.selectedSlicePixelSpacing / 100;
-        _this.layerTypes.find(t => t.id == layer.name).area = area;
+        let meanHU = totalHU / totalPixels
+            
+        let layerType = _this.layerTypes.find(t => t.id == layer.name)
+        layerType.area = area;
+        layerType.meanHU = meanHU
 
       }
 
@@ -774,6 +795,7 @@ export default  {
 
       this.setActiveLayerType(this.layerTypes[0], 0)
       this.layerTypes.splice(layerTypeIndex, 1)
+      localStorage.setItem('layerTypes', JSON.stringify(this.layerTypes))
 
     },
 
@@ -844,8 +866,6 @@ export default  {
     },
 
     setToolToPicker: function (layerType, layerTypeIndex, endpoint) {
-
-      console.log('picker', endpoint)
       
       // Do not trigger multiple picker watchers for the same layer type
       if (layerType.isSegmenting) return false
@@ -1013,12 +1033,15 @@ export default  {
       let fd  = new FormData()
     
       // Get DICOM for the current slice
-      let file = cornerstoneWADOImageLoader.fileManager.get(this.$root.selectedSliceIndex);
+      let sliceIndex = this.$root.selectedSliceIndex
+      let file = cornerstoneWADOImageLoader.fileManager.get(sliceIndex)
+      
+      let dcmFilename = 'slice_'+sliceIndex+'.dcm'
 
-		  fd.append('slice_0.dcm', file, 'slice_0.dcm');
+		  fd.append(dcmFilename, file, dcmFilename);
 
 		  // Add other options
-      fd.append('slices', JSON.stringify([{ index: 0, filename: 'slice_0.dcm' }]))
+      fd.append('slices', JSON.stringify([{ index: 0, filename: dcmFilename }]))
       
       // Post to route
       let fullUrl = layerType.endpoint
@@ -1099,56 +1122,27 @@ export default  {
 
       let zip = new JSZip();
 
-  		let longToShortName = {
-  		  'Left Psoas': 'left-psoas',
-        'Right Psoas': 'right-psoas',
-        'Wall Muscle': 'wall-muscle',
-        'Subcutaneous Fat': 'subcutaneous-fat',
-        'Visceral Fat': 'visceral-fat'
-  		};
+  		let columnIndices = _.flatten(_.map(this.layerTypes, (layerType) => {
+        return [layerType.id + '-area', layerType.id + '-hu']
+  		 }));
 
-  		let columnIndices = ['left-psoas', 'right-psoas', 'wall-muscle',
-                          'subcutaneous-fat', 'visceral-fat'];
-
-
-      // Highly dangerous magic numbers here
-      for (let layer of this.layerTypes) {
-        columnIndices.push(layer.name)
-      }
-
-      let rows = [];   // Just one for now, more later
-
-      // Eventually loop over levels here ...
-      let row = Array(this.layerTypes.length).fill();
+      let rows = [];
+      let row = Array(this.layerTypes.length*2).fill();
 
       let j = 0
 
-      // Iterate twice to get the right order
-      for (let longName of Object.keys(longToShortName)) {
-
-        let shortName = longToShortName[longName]
-        let columnIndex = columnIndices.indexOf(shortName);
-
-        for (let layer of this.layerTypes) {
-          if (layer.name == longName)
-            row[columnIndex] = layer.area;
-        }
-
-        j += 1
-
-      }
-
-      // Highly dangerous magic numbers here
       for (let layer of this.layerTypes) {
         row[j] = layer.area;
-        j += 1
+        row[j+1] = layer.meanHU;
+        j += 2
       }
-
-      // ... to here
 
       // Pretend just one row, eventually there's more
       rows.push(row);
 
+      let sliceIndex = this.$root.selectedSliceIndex
+      let dcmFilename = 'slice_'+sliceIndex+'.dcm'
+        
       let colText = columnIndices.join(','),
           rowText = rows.map( row => row.join(',') ).join("\n"),
           fullText = colText + "\n" + rowText;
@@ -1163,7 +1157,7 @@ export default  {
       for (let layer of this.layerTypes) {
 
         let layerName = layer.name
-        let shortName = layerName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z\-]/g, '').trim()
+        let shortName = layer.id
 
         let currentLayer = Tegaki.layers.filter(l => l.name == shortName)
         let layerCanvas = currentLayer[0].canvas
@@ -1175,7 +1169,6 @@ export default  {
 		    img.file(shortName + ".png", strippedBase64, { base64: true });
 
       }
-
 
       // Add DICOM file
       let file = cornerstoneWADOImageLoader.fileManager.get(this.$root.selectedSliceIndex);
@@ -1190,11 +1183,10 @@ export default  {
 
 			let patientName = currentSerie.slices[0].data.string('x00100020');
 
-
 		  reader.onloadend = function() {
 
 		    var base64data = reader.result;
-				zip.file('slice_dicom.dcm', base64data, { base64: true });
+				zip.file(dcmFilename, base64data, { base64: true });
 
 		    var content = zip.generate({ type:"blob" });
 		    saveAs(content, patientName + '.zip' );
@@ -1647,19 +1639,6 @@ input[type="range"] {
   }
 }
 
-
-@keyframes sk-rotateplane {
-  0% {
-    transform: perspective(120px) rotateX(0deg) rotateY(0deg);
-    -webkit-transform: perspective(120px) rotateX(0deg) rotateY(0deg)
-  } 50% {
-    transform: perspective(120px) rotateX(-180.1deg) rotateY(0deg);
-    -webkit-transform: perspective(120px) rotateX(-180.1deg) rotateY(0deg)
-  } 100% {
-    transform: perspective(120px) rotateX(-180deg) rotateY(-179.9deg);
-    -webkit-transform: perspective(120px) rotateX(-180deg) rotateY(-179.9deg);
-  }
-}
 
 .sk-fading-circle {
   margin: 40px auto;

@@ -11,22 +11,22 @@ const colors = [
 ]
 
 let layerTypes = [
-  //{
-  //  id: 'left-psoas',
-  //  name: 'Left Psoas',
-  //  color: '#00FFFF',
-  //  threshold: [-29.0, 150.0],
-  //  area: 0.00,
-  //  isSegmenting: false
-  //},
-  //{
-  //  id: 'right-psoas',
-  //  name: 'Right Psoas',
-  //  color: '#00FF15',
-  //  threshold: [-29.0, 150.0],
-  //  area: 0.00,
-  //  isSegmenting: false
-  //},
+  {
+    id: 'left-psoas',
+    name: 'Left Psoas',
+    color: '#00FFFF',
+    threshold: [-29.0, 150.0],
+    area: 0.00,
+    isSegmenting: false
+  },
+  {
+    id: 'right-psoas',
+    name: 'Right Psoas',
+    color: '#00FF15',
+    threshold: [-29.0, 150.0],
+    area: 0.00,
+    isSegmenting: false
+  },
   {
     id: 'wall-muscle',
     name: 'Muscle',
