@@ -846,10 +846,12 @@ export default  {
 
       if (Number.isInteger(switchToIndex))
         this.currentLayerTypeIndex = switchToIndex
-
-      Tegaki.setActiveLayer(layerType.tegakiLayerIndex)
-      Tegaki.setToolColor(layerType.color)
-      Tegaki.setToolThreshold(layerType.threshold)
+      
+      if (this.layerTypes.length > 0) {
+        Tegaki.setActiveLayer(layerType.tegakiLayerIndex)
+        Tegaki.setToolColor(layerType.color)
+        Tegaki.setToolThreshold(layerType.threshold)
+      }
 
       console.info('Layer type set to', layerType.name)
 
