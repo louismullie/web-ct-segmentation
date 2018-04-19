@@ -34,7 +34,11 @@
       | CoreSlicer is designed for Google Chrome. Other browsers are not supported.<br> If you wish use CoreSlicer, please follow this #[a(href='https://www.google.com/chrome/' target='_blank') link] to install Chrome.
 
     .ui.text.container( v-if='isChrome' )
-      p CoreSlicer is intended for research and educational purposes only.
+      
+      a(class="github-button" href="https://github.com/louismullie/coreslicer" data-size="large" aria-label="Download source code")&nbsp;Download source code
+      &nbsp;
+      a(class="github-button" href="https://github.com/louismullie/coreslicer/video" data-icon="octicon-eye"  data-size="large" aria-label="Watch a video tutorial") Watch a video tutorial
+        
     //  a( href = 'https://coreslicer.com/static/video.html' ).ui.right.labeled.icon.small.grey.button
     //    i.video.play.icon
     //    |View video tutorial
@@ -44,7 +48,6 @@
   #cs-footer.ui.text.container
     
     .ui.inverted.secondary.menu.center
-      a.item( href = 'https://coreslicer.com/static/video.html' ) Video tutorial
       a.item( 
         href = '#'
         @click.prevent = 'openPrivacyModal'
@@ -54,9 +57,8 @@
         @click.prevent = 'openTermsModal'
       ) Terms of use
 
-    
-    p &copy; Jonathan Afilalo and Louis Mullie, 2014-2017
-                      
+    p  CoreSlicer is intended for research and educational purposes only. <br>&copy; Jonathan Afilalo and Louis Mullie, 2014-2018
+
 modal(name='hello-world') Testing
     
 
@@ -285,7 +287,7 @@ export default {
 }
 
 #cs-footer-divider {
-  margin: 2rem 0 !important;
+  margin: 1.25rem 0 !important;
 }
 
 #cs-footer {
