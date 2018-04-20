@@ -91,7 +91,7 @@ The following demonstrates an example plugin in Python:
 from flask import Flask, request, send_file
 import numpy as np, os, json
 from scipy.misc import imsave
-from coreslicer import read_dcm
+from read_dicom import read_dcm
 
 app = Flask(__name__)
 
@@ -103,9 +103,8 @@ def import_slice_file(request, index, upload_folder):
   
   slices = json.loads(request.form['slices'])
   slice_name = slices[index]['filename']
-  
+
   slices_data = request.files
-  
   slice_data = slices_data[slice_name]
   
   slice_filename = os.path.join(upload_folder, slice_data.filename)
@@ -120,18 +119,22 @@ def export_slice_file(mask, upload_folder):
   imsave(image_filename, mask)
 
   return image_filename
-  
+
 @app.route('/endpoint', methods = ['POST'])
   
 def segmentation_function():
   
   slice_filename = import_slice_file(request, 0, app.config['UPLOAD_FOLDER'])
   
-  dcm_image, grayscale, pixel_spacing = read_dcm(slice_filename)
+  image = read_dcm(slice_filename)
 
-  mask = np.zeros((dcm_image.shape[0], dcm_image.shape[1], 4))
-  mask[dcm_image > 0] = (1, 1, 1, 1)
-
+  hu = image['hounsfield']
+  
+  # Do the thresholding
+  mask = np.zeros((hu.shape[0], hu.shape[1], 4))
+  mask[hu > -30] = (1, 1, 1, 1)
+  mask[hu > 150] = (0, 0, 0, 0)
+  
   return send_file(
     export_slice_file(mask, app.config['UPLOAD_FOLDER']),
     attachment_filename='result.png', mimetype='image/png')
