@@ -912,13 +912,22 @@ export default  {
           fd  = new FormData();
 
       // Add DICOM file
-      let file = cornerstoneWADOImageLoader.fileManager.get(this.$root.selectedSliceIndex);
-      fd.append('file', file, 'file.dcm');
+      let selectedSliceIndex = this.$root.selectedSliceIndex
+      let sliceName = 'slice_' + selectedSliceIndex +  '.dcm'
+      let file = cornerstoneWADOImageLoader.fileManager.get(selectedSliceIndex);
+      
+      fd.append('slices', JSON.stringify([
+        {
+          filename: sliceName
+        }
+      ]));
+      
+      fd.append(sliceName, file, sliceName);
 
       // Add other options
 			fd.append('x', cursorPos.x);
       fd.append('y', cursorPos.y)
-
+      
       // Post to route
       let fullUrl = layerType.endpoint;
 

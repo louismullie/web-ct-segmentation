@@ -4,6 +4,9 @@
     a( v-link = "{ path: '/' }" ).Logo
       img( src = '../../assets/logo-with-brand.svg' height = '50' )
 
+    br
+    p(style="font-size:1rem")  CoreSlicer is for research and educational purposes only. <br> By using this website, you agree to our <u><a href="https://github.com/louismullie/coreslicer/blob/master/TERMS.md" />terms of use.</a></u>
+          
     #cs-dropzone(
       v-if='isChrome',
       v-on:dragover = "dragEnter"
@@ -36,8 +39,8 @@
     .ui.text.container( v-if='isChrome' )
       
       a(class="github-button" href="https://github.com/louismullie/coreslicer" data-size="large" aria-label="Download source code")&nbsp;Download source code
-      &nbsp;
-      a(class="github-button" href="https://github.com/louismullie/coreslicer/video" data-icon="octicon-eye"  data-size="large" aria-label="Watch a video tutorial") Watch a video tutorial
+      &nbsp;&nbsp;&nbsp;
+      a(class="github-button" href="https://youtube.com" data-icon="octicon-eye"  data-size="large" aria-label="Watch a video tutorial") Watch a video tutorial
         
     //  a( href = 'https://coreslicer.com/static/video.html' ).ui.right.labeled.icon.small.grey.button
     //    i.video.play.icon
@@ -47,17 +50,7 @@
 
   #cs-footer.ui.text.container
     
-    .ui.inverted.secondary.menu.center
-      a.item( 
-        href = '#'
-        @click.prevent = 'openPrivacyModal'
-      ) Privacy policy
-      a.item( 
-        href = '#'
-        @click.prevent = 'openTermsModal'
-      ) Terms of use
-
-    p  CoreSlicer is intended for research and educational purposes only. <br>&copy; Jonathan Afilalo and Louis Mullie, 2014-2018
+    p &copy; Jonathan Afilalo and Louis Mullie, 2014-2018
 
 modal(name='hello-world') Testing
     
@@ -261,7 +254,7 @@ export default {
 
 #cs-container {
   min-height: 100vh;
-  padding: 4rem 0 !important;
+  padding: 3.5rem 0 !important;
 }
 
 .Logo {
@@ -287,7 +280,7 @@ export default {
 }
 
 #cs-footer-divider {
-  margin: 1.25rem 0 !important;
+  margin: 2rem 0 !important;
 }
 
 #cs-footer {
@@ -300,7 +293,7 @@ export default {
 }
 
 #cs-dropzone {
-  margin: 4rem auto;
+  margin: 3.75rem auto;
   max-width: 400px;
 
   &.hover .ui.secondary {
