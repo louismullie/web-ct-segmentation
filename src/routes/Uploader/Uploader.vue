@@ -37,14 +37,14 @@
       | CoreSlicer is designed for Google Chrome. Other browsers are not supported.<br> If you wish use CoreSlicer, please follow this #[a(href='https://www.google.com/chrome/' target='_blank') link] to install Chrome.
 
     .ui.text.container( v-if='isChrome' )
-      
-      a(class="github-button" href="https://github.com/louismullie/coreslicer" data-size="large" aria-label="Download source code")&nbsp;Download source code
-      &nbsp;&nbsp;&nbsp;
-      a(class="github-button" href="https://youtube.com" data-icon="octicon-eye"  data-size="large" aria-label="Watch a video tutorial") Watch a video tutorial
-        
-    //  a( href = 'https://coreslicer.com/static/video.html' ).ui.right.labeled.icon.small.grey.button
-    //    i.video.play.icon
-    //    |View video tutorial
+     
+      a( href = 'https://github.com/louismullie/coreslicer' ).ui.right.labeled.icon.small.grey.button
+        i.cloud.download.icon
+        |Download source code
+          
+      a( href = 'https://coreslicer.com/static/video.html' ).ui.right.labeled.icon.small.grey.button
+        i.play.circle.icon
+        |Watch a video tutorial
         
   #cs-footer-divider.ui.divider.inverted
 
