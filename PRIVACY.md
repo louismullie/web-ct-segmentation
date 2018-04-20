@@ -1,2 +1,0 @@
-# CoreSlicer: Privacy Policy
-
