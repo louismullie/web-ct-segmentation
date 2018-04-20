@@ -17,7 +17,7 @@ let layerTypes = [
     color: '#00FFFF',
     threshold: [-29.0, 150.0],
     endpoint: 'http://localhost:4444',
-    endpointToolType: '0',
+    endpointToolType: '1',
     area: 0.00,
     isSegmenting: false
   },
@@ -27,7 +27,7 @@ let layerTypes = [
     color: '#00FF15',
     threshold: [-29.0, 150.0],
     endpoint: 'http://localhost:4444',
-    endpointToolType: '0',
+    endpointToolType: '1',
     area: 0.00,
     isSegmenting: false
   },
@@ -37,7 +37,7 @@ let layerTypes = [
     color: '#FF0000',
     threshold: [-29.0, 150.0],
     endpoint: 'http://localhost:4444',
-    endpointToolType: '1',
+    endpointToolType: '0',
     area: 0.00,
     isSegmenting: false
   },
@@ -47,7 +47,7 @@ let layerTypes = [
     color: '#4800FF',
     threshold: [-190.0, -30.0],
     endpoint: 'http://localhost:4444',
-    endpointToolType: '1',
+    endpointToolType: '0',
     area: 0.00,
     isSegmenting: false
   },
@@ -57,7 +57,7 @@ let layerTypes = [
     color: '#FFFF00',
     threshold: [-190.0, -30.0],
     endpoint: 'http://localhost:4444',
-    endpointToolType: '1',
+    endpointToolType: '0',
     area: 0.00,
     isSegmenting: false
   },

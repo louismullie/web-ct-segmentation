@@ -117,7 +117,7 @@
             a.popup.icon.item(
               href='#',
               @click.prevent=`
-                (layerType.endpointToolType == '0'
+                (layerType.endpointToolType == '1'
                   ? setToolToPicker(layerType, $index)
                   : applySegmentationPreset(layerType, $index) )
               `,
@@ -803,6 +803,8 @@ export default  {
 
       const name = this.newLayer.name
       const endpoint = this.newLayer.endpoint
+      const endpointToolType = this.newLayer.endpointToolType
+          
       const threshold = this.baseLayerTypes[this.newLayer.baseLayerTypeIndex].threshold
 
       const id = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z\-]/g, '').trim()
@@ -824,6 +826,7 @@ export default  {
         color,
         threshold,
         endpoint,
+        endpointToolType,
         area: 0.00,
         isSegmenting: false
       }
