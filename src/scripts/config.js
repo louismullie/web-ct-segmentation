@@ -16,6 +16,8 @@ let layerTypes = [
     name: 'Left Psoas',
     color: '#00FFFF',
     threshold: [-29.0, 150.0],
+    endpoint: 'http://localhost:4444',
+    endpointToolType: '0',
     area: 0.00,
     isSegmenting: false
   },
@@ -24,6 +26,8 @@ let layerTypes = [
     name: 'Right Psoas',
     color: '#00FF15',
     threshold: [-29.0, 150.0],
+    endpoint: 'http://localhost:4444',
+    endpointToolType: '0',
     area: 0.00,
     isSegmenting: false
   },
@@ -32,7 +36,8 @@ let layerTypes = [
     name: 'Muscle',
     color: '#FF0000',
     threshold: [-29.0, 150.0],
-    endpoint: 'http://localhost:8000',
+    endpoint: 'http://localhost:4444',
+    endpointToolType: '1',
     area: 0.00,
     isSegmenting: false
   },
@@ -41,7 +46,8 @@ let layerTypes = [
     name: 'Subcutaneous fat',
     color: '#4800FF',
     threshold: [-190.0, -30.0],
-    endpoint: 'http://localhost:8000',
+    endpoint: 'http://localhost:4444',
+    endpointToolType: '1',
     area: 0.00,
     isSegmenting: false
   },
@@ -50,7 +56,8 @@ let layerTypes = [
     name: 'Visceral fat',
     color: '#FFFF00',
     threshold: [-190.0, -30.0],
-    endpoint: 'http://localhost:8000',
+    endpoint: 'http://localhost:4444',
+    endpointToolType: '1',
     area: 0.00,
     isSegmenting: false
   },
@@ -58,7 +65,7 @@ let layerTypes = [
 
 // Do not edit below this line
 if (localStorage.getItem('layerTypes') !== undefined) {
-  layerTypes = JSON.parse(localStorage.getItem('layerTypes'))
+//  layerTypes = JSON.parse(localStorage.getItem('layerTypes'))
 }
   
 localStorage.setItem("layerTypes", JSON.stringify(layerTypes))

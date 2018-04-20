@@ -117,9 +117,9 @@
             a.popup.icon.item(
               href='#',
               @click.prevent=`
-                ($index === 0 || $index === 1)
+                (layerType.endpointToolType == '0'
                   ? setToolToPicker(layerType, $index)
-                  : applySegmentationPreset(layerType, $index)
+                  : applySegmentationPreset(layerType, $index) )
               `,
               :class=`{
                 'is-segmenting': layerType.isSegmenting,
@@ -836,9 +836,12 @@ export default  {
 
       // Reset new Layer
       this.newLayer.name = ''
-
+      
+      let newLayerTypeIndex = this.layerTypes.length - 1
+          
       // Switch to layer
-      this.setActiveLayerType(newLayerType, this.layerTypes.length - 1)
+      this.setCurrentTool(0, newLayerType, newLayerTypeIndex)
+      this.setActiveLayerType(newLayerType, newLayerTypeIndex)
 
     },
 
