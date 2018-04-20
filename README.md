@@ -162,8 +162,8 @@ On any screen, tap the "?" button at the bottom-left of the interface to display
 
 ## User agreement
 
-CoreSlicer is freely available for academic research. It may not be used for commercial or clinical applications.
+CoreSlicer is for research and educational use only. It may not be used for commercial or clinical applications. By using CoreSlicer, you agree to our terms of use and privacy policy, which can be found [here](https://github.com/louismullie/coreslicer/blob/master/TERMS.md).
 
 ## License
 
-This software is released under the MIT License. 
+This software is released under the MIT License. Contributions from the community are welcome.
