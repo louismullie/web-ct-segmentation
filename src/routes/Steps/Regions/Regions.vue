@@ -350,6 +350,7 @@ export default  {
     if (this.$root.series.length === 1 && this.$root.series[0].slices.length === 1)
       this.$parent.singleSliceMode = true
 
+        // here
     this.$root.selectedSliceSizeInfo = sizeInfo;
     this.$root.selectedSlicePixelData = pixelData;
     this.$root.selectedSliceRescaleIntercept = selectedSlice.intercept;
@@ -469,7 +470,7 @@ export default  {
 			      fd  = new FormData();
 
 			  // Add DICOM file
-			  let file = cornerstoneWADOImageLoader.fileManager.get($vm.$root.selectedSliceIndex);
+			  let file = _this.getCurrentSliceFile()
 				fd.append('x', cursorPos.x)
 			  fd.append('y', cursorPos.y)
 
@@ -763,6 +764,17 @@ export default  {
   },
 
   methods: {
+  
+    getCurrentSliceFile () {
+      
+      let imageId = $vm.$root.selectedSlice.imageId
+      let cornerstoneImageIndex = imageId.split(':')[1]
+        
+      let file = cornerstoneWADOImageLoader.fileManager.get(cornerstoneImageIndex);
+      
+      return file
+    
+    },
 
     showHelp () {
       setTimeout(() => {
@@ -920,7 +932,7 @@ export default  {
       // Add DICOM file
       let selectedSliceIndex = this.$root.selectedSliceIndex
       let sliceName = 'slice_' + selectedSliceIndex +  '.dcm'
-      let file = cornerstoneWADOImageLoader.fileManager.get(selectedSliceIndex);
+      let file = this.getCurrentSliceFile()
       
       fd.append('slices', JSON.stringify([
         {
@@ -1051,7 +1063,7 @@ export default  {
     
       // Get DICOM for the current slice
       let sliceIndex = this.$root.selectedSliceIndex
-      let file = cornerstoneWADOImageLoader.fileManager.get(sliceIndex)
+      let file = this.getCurrentSliceFile()
       
       let dcmFilename = 'slice_'+sliceIndex+'.dcm'
 
@@ -1188,11 +1200,10 @@ export default  {
       }
 
       // Add DICOM file
-      let file = cornerstoneWADOImageLoader.fileManager.get(this.$root.selectedSliceIndex);
+      let file = this.getCurrentSliceFile()
 
 			var reader = new window.FileReader();
 		  reader.readAsArrayBuffer(file);
-
 
       // If less than 10 slices in current serie
       let currentSerie = this.$root.series.filter(
