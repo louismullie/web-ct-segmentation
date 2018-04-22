@@ -16,7 +16,7 @@ let layerTypes = [
     name: 'Left Psoas',
     color: '#00FFFF',
     threshold: [-29.0, 150.0],
-    endpoint: 'http://localhost:4444',
+    endpoint: '/api/segment?type=psoas_muscle',
     endpointToolType: '1',
     area: 0.00,
     isSegmenting: false
@@ -26,7 +26,7 @@ let layerTypes = [
     name: 'Right Psoas',
     color: '#00FF15',
     threshold: [-29.0, 150.0],
-    endpoint: 'http://localhost:4444',
+    endpoint: '/api/segment?type=psoas_muscle',
     endpointToolType: '1',
     area: 0.00,
     isSegmenting: false
@@ -36,7 +36,7 @@ let layerTypes = [
     name: 'Muscle',
     color: '#FF0000',
     threshold: [-29.0, 150.0],
-    endpoint: 'http://localhost:4444',
+    endpoint: '/api/segment?type=lumbar_muscle',
     endpointToolType: '0',
     area: 0.00,
     isSegmenting: false
@@ -46,7 +46,7 @@ let layerTypes = [
     name: 'Subcutaneous fat',
     color: '#4800FF',
     threshold: [-190.0, -30.0],
-    endpoint: 'http://localhost:4444',
+    endpoint: '/api/segment?type=subcut_fat',
     endpointToolType: '0',
     area: 0.00,
     isSegmenting: false
@@ -56,7 +56,7 @@ let layerTypes = [
     name: 'Visceral fat',
     color: '#FFFF00',
     threshold: [-190.0, -30.0],
-    endpoint: 'http://localhost:4444',
+    endpoint: '/api/segment?type=visceral_fat',
     endpointToolType: '0',
     area: 0.00,
     isSegmenting: false

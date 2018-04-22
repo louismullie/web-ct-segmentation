@@ -20,6 +20,10 @@ var app = express()
 app.use(cors(config.devServer.header))
 var compiler = webpack(webpackConfig)
 
+var proxy = require('express-http-proxy')
+
+app.use('/api', proxy('http://localhost:8000'))
+
 var devMiddleware = require('webpack-dev-middleware')(compiler, {
   publicPath: webpackConfig.output.publicPath,
   stats: {
