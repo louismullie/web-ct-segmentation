@@ -64,7 +64,7 @@ let layerTypes = [
 ]
 
 // Do not edit below this line
-if (localStorage.getItem('layerTypes')) {
+if (localStorage.getItem('layerTypes') !== null) {
   layerTypes = JSON.parse(localStorage.getItem('layerTypes'))
 }
   
