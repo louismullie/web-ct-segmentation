@@ -457,120 +457,6 @@ export default  {
 
     var _this = this;
 
-		Tegaki.magicSegmentation = function () {
-
-				NProgress.start()
-			  // Get active canvas
-          console.log(Tegaki.activeLayer)
-			  let canvas = Tegaki.layers[Tegaki.activeLayer].canvas,
-			      ctx = canvas.getContext('2d');
-
-			  // Create request
-			  let xhr = new XMLHttpRequest(),
-			      fd  = new FormData();
-
-			  // Add DICOM file
-			  let file = _this.getCurrentSliceFile()
-				fd.append('x', cursorPos.x)
-			  fd.append('y', cursorPos.y)
-
-			  // Post to route
-			  let baseUrl = '/pipeline',
-			      fullUrl = baseUrl + '/segment_fullslice';
-
-			  xhr.open('POST', fullUrl , true);
-			  xhr.responseType = 'blob';
-
-				let layerColors = [[255, 0, 0], [0, 255, 0], [0,0,255]];
-
-			  // When POST succeeded
-			  xhr.onload = function(evt) {
-
-			    // Get URL to PNG sent by server
-			    var url = window.URL.createObjectURL(evt.target.response);
-
-			    var img = new Image();
-
-			    // Draw received image on canvas
-			    img.onload = function () {
-
-			      // Create in memory canvas for color replacement
-			      var imgCanvas = document.createElement("canvas");
-
-						imgCanvas.width = this.width;
-			      imgCanvas.height = this.height;
-
-						let imgWidth = parseInt(this.width / 3)
-						let imgHeight = this.height
-
-            let layers = [
-              Tegaki.layers.find(l =>   l.name == 'wall-muscle'),
-              Tegaki.layers.find(l =>   l.name == 'subcutaneous-fat'),
-              Tegaki.layers.find(l =>   l.name == 'visceral-fat')
-            ]
-
-            let j = 0;
-
-						for (let layer of layers) {
-
-              let layerColor = _this.layerTypes.find(l => l.id == layer.name).color
-              layerColor = _this.hex2rgb(layerColor)
-              //let layerIndex = layer.tegakiLayerIndex
-
-						  let canvas = layer.canvas,
-						      ctx = canvas.getContext('2d');
-
-				      // Copy the image contents to the canvas
-				      var imgCtx = imgCanvas.getContext("2d");
-							imgCtx.drawImage(this, 0, 0);
-
-				      let imageData = imgCtx.getImageData(imgWidth * j, 0, imgWidth, imgHeight),
-				          imagePixelArray = imageData.data;
-
-				      let targetData = ctx.getImageData(0, 0, imgWidth, imgHeight),
-				          targetPixelArray = targetData.data;
-
-				      // 4 components - red, green, blue and alpha
-				      var length = targetPixelArray.length;
-
-				      // Iterate and apply layer color
-				      for (var i = 3; i < length; i+= 4) {
-
-				        if (imagePixelArray[i] > 0) {
-				          targetPixelArray[i-3] = layerColor[0];
-				          targetPixelArray[i-2] = layerColor[1];
-				          targetPixelArray[i-1] = layerColor[2]
-				          targetPixelArray[i] = 255;
-				        }
-
-				      }
-
-				      ctx.putImageData(targetData, 0, 0);
-
-              j++
-
-						}
-
-			      // Trigger refresh measurements
-			      Tegaki.refreshMeasurements();
-
-						NProgress.done()
-						// FINISH NPROGRESS
-			      //layerType.isSegmenting = false;
-
-			    };
-
-			    // Set URL on image
-			    img.src = url;
-
-
-			  };
-
-			  // Send request with form data
-			  xhr.send(fd);
-
-		}
-
     Tegaki.fitToView = function () {
       Tegaki.scaleFactor = scaleMin
       Tegaki.updateScaleAndBrushSize()
@@ -686,8 +572,6 @@ export default  {
       
       let area = totalPixels * Tegaki.selectedSlicePixelSpacing / 100
       let meanHU = totalHU / totalPixels
-        
-      console.log(totalHU, totalPixels, meanHU)
       
       let layerType = this.layerTypes[this.currentLayerTypeIndex]
         
@@ -1005,7 +889,7 @@ export default  {
 					NProgress.done()
 
           layerType.isSegmenting = false;
-
+          _this.isWaitingForSegmentationPoint = true
         };
 
         // Set URL on image
@@ -1080,8 +964,6 @@ export default  {
       
       // When POST succeeded
       xhr.onload = function(evt) {
-
-        console.log(evt.target.response)
         
         // Get URL to PNG sent by server
         var url = window.URL.createObjectURL(evt.target.response);
