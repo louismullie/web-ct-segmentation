@@ -13,7 +13,7 @@ const colors = [
 let layerTypes = [
   {
     id: 'left-psoas',
-    name: 'Left Psoas',
+    name: 'Left psoas muscle',
     color: '#00FFFF',
     threshold: [-29.0, 150.0],
     endpoint: '/api/segment?type=psoas_muscle',
@@ -23,7 +23,7 @@ let layerTypes = [
   },
   {
     id: 'right-psoas',
-    name: 'Right Psoas',
+    name: 'Right psoas muscle',
     color: '#00FF15',
     threshold: [-29.0, 150.0],
     endpoint: '/api/segment?type=psoas_muscle',
@@ -33,7 +33,7 @@ let layerTypes = [
   },
   {
     id: 'wall-muscle',
-    name: 'Muscle',
+    name: 'Total lumbar muscle',
     color: '#FF0000',
     threshold: [-29.0, 150.0],
     endpoint: '/api/segment?type=lumbar_muscle',
