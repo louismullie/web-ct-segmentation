@@ -64,7 +64,7 @@ let layerTypes = [
 ]
 
 // Do not edit below this line
-if (localStorage.getItem('layerTypes') !== undefined) {
+if (localStorage.getItem('layerTypes')) {
   layerTypes = JSON.parse(localStorage.getItem('layerTypes'))
 }
   
