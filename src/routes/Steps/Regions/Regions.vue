@@ -305,7 +305,6 @@ export default  {
       currentTool: 0,
       brushSize: 0,
       currentColorIndex: 4,
-      isWaitingForSegmentationPoint: false,
 
       newLayer: {
         name: '',
@@ -544,8 +543,8 @@ export default  {
 
       // If we are in picker mode, shortcircuit and segment the layer
       // with the current cursor position
-      if (this.isWaitingForSegmentationPoint) {
-        this.isWaitingForSegmentationPoint = false
+      if (Tegaki.isWaitingForSegmentationPoint) {
+        Tegaki.isWaitingForSegmentationPoint = false
 				this.applyCursorPreset(tegakiCursorPos)
         return;
       }
@@ -781,12 +780,12 @@ export default  {
       this.setCurrentTool(2, layerType, layerTypeIndex)
 
       // Set the flag that Tegaki.donePainting() will use to watch for the point click
-      this.isWaitingForSegmentationPoint = true
+      Tegaki.isWaitingForSegmentationPoint = true
 
     },
 
 		applyCursorPreset: function (cursorPos) {
-
+      
 			NProgress.start()
 			let _this = this;
 
@@ -889,7 +888,7 @@ export default  {
 					NProgress.done()
 
           layerType.isSegmenting = false;
-          _this.isWaitingForSegmentationPoint = true
+          Tegaki.isWaitingForSegmentationPoint = false
         };
 
         // Set URL on image
