@@ -838,6 +838,21 @@ export default  {
       // When POST succeeded
       xhr.onload = function(evt) {
 
+        // Catch errors
+        if (evt.currentTarget.status !== 200) {
+          
+          if (_this.currentLayerTypeIndex === currentLayerTypeIndex) {
+            _this.setCurrentTool(0, layerType, currentLayerTypeIndex)
+          }
+					NProgress.done()
+ 
+          layerType.isSegmenting = false
+            
+          alert('Error while using brush function.')
+          console.log(evt)
+          
+        }
+        
         // Get URL to PNG sent by server
         var url = window.URL.createObjectURL(evt.target.response);
         var img = new Image();
@@ -964,7 +979,23 @@ export default  {
       // When POST succeeded
       xhr.onload = function(evt) {
         
-        // Get URL to PNG sent by server
+        if (evt.currentTarget.status !== 200) {
+          
+          if (_this.currentLayerTypeIndex === switchToIndex) {
+            _this.setCurrentTool(0, layerTypeToSwitchTo, switchToIndex)
+          }
+          
+					NProgress.done()
+ 
+          layerType.isSegmenting = false
+        
+          alert('Error while using brush function.')
+  
+          console.log(evt)
+    
+        }
+        
+        // Get URL to PNG sent by server
         var url = window.URL.createObjectURL(evt.target.response);
         var img = new Image();
 
