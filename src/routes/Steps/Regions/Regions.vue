@@ -753,7 +753,9 @@ export default  {
         Tegaki.setToolColor(layerType.color)
         Tegaki.setToolThreshold(layerType.threshold)
       }
-
+      
+      Tegaki.isWaitingForSegmentationPoint = false
+      
       console.info('Layer type set to', layerType.name)
 
     },
