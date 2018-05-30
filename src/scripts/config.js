@@ -16,7 +16,7 @@ let layerTypes = [
     name: 'Left psoas',
     color: '#00FFFF',
     threshold: [-29.0, 150.0],
-    endpoint: '/api/segment?type=psoas_muscle',
+    endpoint: '/segment?type=psoas_muscle',
     endpointToolType: '1',
     area: 0.00,
     isSegmenting: false
