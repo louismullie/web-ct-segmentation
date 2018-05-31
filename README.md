@@ -139,10 +139,16 @@ def segmentation_function():
     export_slice_file(mask, app.config['UPLOAD_FOLDER']),
     attachment_filename='result.png', mimetype='image/png')
 
-if __name__ == '__main__':
-    port = 8000
-    app.run(host='0.0.0.0', port=port)
 ```
+
+If you save this file as "server.py," you can run it using `gunicorn` (or any other process manager of your choice):
+
+
+```
+gunicorn filename:app
+```
+
+> To install `gunicorn`, run `pip install gunicorn`.
 
 ## User interface
 
@@ -162,7 +168,7 @@ On any screen, tap the "?" button at the bottom-left of the interface to display
 
 ## User agreement
 
-CoreSlicer is for research and educational use only. It may not be used for commercial or clinical applications. By using CoreSlicer, you agree to our terms of use and privacy policy, which can be found [here](https://github.com/louismullie/coreslicer/blob/master/TERMS.md).
+CoreSlicer is for research and educational use only. It may not be used for commercial or clinical applications. By using CoreSlicer, you agree to our terms of use and privacy policy, which can be found [here](https://github.com/louismullie/coreslicer/blob/master/TERMS.md).2
 
 ## License
 
