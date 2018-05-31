@@ -759,9 +759,10 @@ export default  {
     },
 
     setCurrentTool: function (toolI, layerTypeToSwitchTo, layerTypeToSwitchToIndex) {
-
+      
+      console.info('Setting current tool to ' + toolI)
       Tegaki.isWaitingForSegmentationPoint = false
-        
+
       // Do not allow to switch to a tool that is in a layer that is segmenting
       if (layerTypeToSwitchTo.isSegmenting) return
 
