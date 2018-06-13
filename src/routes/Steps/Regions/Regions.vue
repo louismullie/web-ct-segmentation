@@ -577,6 +577,8 @@ export default  {
       layerType.area = area;
       layerType.meanHU = meanHU;
 
+      Tegaki.refreshMeasurements();
+        
     }
 
     Tegaki.refreshMeasurements = () => {
