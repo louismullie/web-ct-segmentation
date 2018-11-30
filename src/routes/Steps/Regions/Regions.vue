@@ -660,6 +660,10 @@ export default  {
       return file
     
     },
+    
+    getCurrentSliceFileAnon(cb) {
+      this.anonymizeDicom(this.getCurrentSliceFile(), cb)
+    },
 
     showHelp () {
       setTimeout(() => {
@@ -820,105 +824,110 @@ export default  {
       // Add DICOM file
       let selectedSliceIndex = this.$root.selectedSliceIndex
       let sliceName = 'slice_' + selectedSliceIndex +  '.dcm'
-      let file = this.getCurrentSliceFile()
-      
-      fd.append('slices', JSON.stringify([
-        {
-          filename: sliceName
-        }
-      ]));
-      
-      fd.append(sliceName, file, sliceName);
-
-      // Add other options
-			fd.append('x', cursorPos.x);
-      fd.append('y', cursorPos.y)
-      
-      // Post to route
-      let fullUrl = layerType.endpoint;
-
-      xhr.open('POST', fullUrl , true);
-      xhr.responseType = 'blob';
-
-      // When POST succeeded
-      xhr.onload = function(evt) {
-
-        // Catch errors
-        if (evt.currentTarget.status !== 200) {
           
-          if (_this.currentLayerTypeIndex === currentLayerTypeIndex) {
-            _this.setCurrentTool(0, layerType, currentLayerTypeIndex)
-          }
-					NProgress.done()
- 
-          layerType.isSegmenting = false
-            
-          alert('Error while using brush function.')
-          console.log(evt)
-          
-        }
+      this.getCurrentSliceFileAnon((file) => {
         
-        // Get URL to PNG sent by server
-        var url = window.URL.createObjectURL(evt.target.response);
-        var img = new Image();
+        fd.append('slices', JSON.stringify([
+          {
+            filename: sliceName
+          }
+        ]));
+      
+        fd.append(sliceName, file, sliceName);
 
-        // Draw received image on canvas
-        img.onload = function () {
+        // Add other options
+  			fd.append('x', cursorPos.x);
+        fd.append('y', cursorPos.y)
+      
+        // Post to route
+        let fullUrl = layerType.endpoint;
 
-          // Create in memory canvas for color replacement
-          var imgCanvas = document.createElement("canvas");
-              imgCanvas.width = this.width;
-              imgCanvas.height = this.height;
+        xhr.open('POST', fullUrl , true);
+        xhr.responseType = 'blob';
 
-          // Copy the image contents to the canvas
-          var imgCtx = canvas.getContext("2d");
-              imgCtx.drawImage(this, 0, 0);
+        // When POST succeeded
+        xhr.onload = function(evt) {
 
-          let imageData = imgCtx.getImageData(0, 0, this.width, this.height),
-              imagePixelArray = imageData.data;
+          // Catch errors
+          if (evt.currentTarget.status !== 200) {
+          
+            if (_this.currentLayerTypeIndex === currentLayerTypeIndex) {
+              _this.setCurrentTool(0, layerType, currentLayerTypeIndex)
+            }
+  					NProgress.done()
+ 
+            layerType.isSegmenting = false
+            
+            alert('Error while using brush function.')
+            console.log(evt)
+          
+          }
+        
+          // Get URL to PNG sent by server
+          var url = window.URL.createObjectURL(evt.target.response);
+          var img = new Image();
 
-          let targetData = ctx.getImageData(0, 0, this.width, this.height),
-              targetPixelArray = targetData.data;
+          // Draw received image on canvas
+          img.onload = function () {
 
-          // 4 components - red, green, blue and alpha
-          var length = targetPixelArray.length;
+            // Create in memory canvas for color replacement
+            var imgCanvas = document.createElement("canvas");
+                imgCanvas.width = this.width;
+                imgCanvas.height = this.height;
 
-          // Iterate and apply layer color
-          for (var i = 3; i < length; i+= 4) {
+            // Copy the image contents to the canvas
+            var imgCtx = canvas.getContext("2d");
+                imgCtx.drawImage(this, 0, 0);
 
-            if (imagePixelArray[i] > 0) {
-              targetPixelArray[i-3] = layerColor[0];
-              targetPixelArray[i-2] = layerColor[1];
-              targetPixelArray[i-1] = layerColor[2]
-              targetPixelArray[i] = 255;
+            let imageData = imgCtx.getImageData(0, 0, this.width, this.height),
+                imagePixelArray = imageData.data;
+
+            let targetData = ctx.getImageData(0, 0, this.width, this.height),
+                targetPixelArray = targetData.data;
+
+            // 4 components - red, green, blue and alpha
+            var length = targetPixelArray.length;
+
+            // Iterate and apply layer color
+            for (var i = 3; i < length; i+= 4) {
+
+              if (imagePixelArray[i] > 0) {
+                targetPixelArray[i-3] = layerColor[0];
+                targetPixelArray[i-2] = layerColor[1];
+                targetPixelArray[i-1] = layerColor[2]
+                targetPixelArray[i] = 255;
+              }
+
             }
 
-          }
+            ctx.putImageData(targetData, 0, 0);
 
-          ctx.putImageData(targetData, 0, 0);
+            // Trigger refresh measurements
+            Tegaki.donePainting();
 
-          // Trigger refresh measurements
-          Tegaki.donePainting();
+            // If user waited on the layer while segmenting, change tool to brush
+            if (_this.currentLayerTypeIndex === currentLayerTypeIndex) {
+              _this.setCurrentTool(0, layerType, currentLayerTypeIndex)
+            }
 
-          // If user waited on the layer while segmenting, change tool to brush
-          if (_this.currentLayerTypeIndex === currentLayerTypeIndex) {
-            _this.setCurrentTool(0, layerType, currentLayerTypeIndex)
-          }
+  					NProgress.done()
 
-					NProgress.done()
+            layerType.isSegmenting = false;
+            Tegaki.isWaitingForSegmentationPoint = false
+          };
 
-          layerType.isSegmenting = false;
-          Tegaki.isWaitingForSegmentationPoint = false
+          // Set URL on image
+          img.src = url;
+
         };
 
-        // Set URL on image
-        img.src = url;
-
-      };
-
-      // Send request with form data
-      xhr.send(fd);
-
+        // Send request with form data
+        xhr.send(fd);
+        
+        
+      })
+      
+      
 		},
 
     // Utility function for hex to rgb
@@ -966,101 +975,105 @@ export default  {
     
       // Get DICOM for the current slice
       let sliceIndex = this.$root.selectedSliceIndex
-      let file = this.getCurrentSliceFile()
+          
+      this.getCurrentSliceFileAnon( (file) => {
       
-      let dcmFilename = 'slice_'+sliceIndex+'.dcm'
+        let dcmFilename = 'slice_'+sliceIndex+'.dcm'
 
-		  fd.append(dcmFilename, file, dcmFilename);
+  		  fd.append(dcmFilename, file, dcmFilename);
 
-		  // Add other options
-      fd.append('slices', JSON.stringify([{ index: 0, filename: dcmFilename }]))
+  		  // Add other options
+        fd.append('slices', JSON.stringify([{ index: 0, filename: dcmFilename }]))
       
-      // Post to route
-      let fullUrl = layerType.endpoint
+        // Post to route
+        let fullUrl = layerType.endpoint
       
-      xhr.open('POST', fullUrl , true);
-      xhr.responseType = 'blob';
+        xhr.open('POST', fullUrl , true);
+        xhr.responseType = 'blob';
       
-      // When POST succeeded
-      xhr.onload = function(evt) {
+        // When POST succeeded
+        xhr.onload = function(evt) {
         
-        if (evt.currentTarget.status !== 200) {
+          if (evt.currentTarget.status !== 200) {
           
-          if (_this.currentLayerTypeIndex === switchToIndex) {
-            _this.setCurrentTool(0, layerTypeToSwitchTo, switchToIndex)
-          }
+            if (_this.currentLayerTypeIndex === switchToIndex) {
+              _this.setCurrentTool(0, layerTypeToSwitchTo, switchToIndex)
+            }
           
-					NProgress.done()
+  					NProgress.done()
  
-          layerType.isSegmenting = false
+            layerType.isSegmenting = false
         
-          alert('Error while using brush function.')
+            alert('Error while using brush function.')
   
-          console.log(evt)
+            console.log(evt)
     
-        }
+          }
         
-        // Get URL to PNG sent by server
-        var url = window.URL.createObjectURL(evt.target.response);
-        var img = new Image();
+          // Get URL to PNG sent by server
+          var url = window.URL.createObjectURL(evt.target.response);
+          var img = new Image();
 
-        // Draw received image on canvas
-        img.onload = function () {
+          // Draw received image on canvas
+          img.onload = function () {
 
-          // Create in memory canvas for color replacement
-          let imgCanvas = document.createElement("canvas")
-          imgCanvas.width = this.width,
-          imgCanvas.height = this.height
+            // Create in memory canvas for color replacement
+            let imgCanvas = document.createElement("canvas")
+            imgCanvas.width = this.width,
+            imgCanvas.height = this.height
 
-          // Copy the image contents to the canvas
-          let imgCtx = canvas.getContext("2d")
-          imgCtx.drawImage(this, 0, 0)
+            // Copy the image contents to the canvas
+            let imgCtx = canvas.getContext("2d")
+            imgCtx.drawImage(this, 0, 0)
 
-          let imageData = imgCtx.getImageData(0, 0, this.width, this.height)
-          let imagePixelArray = imageData.data
+            let imageData = imgCtx.getImageData(0, 0, this.width, this.height)
+            let imagePixelArray = imageData.data
 
-          let targetData = ctx.getImageData(0, 0, this.width, this.height)
-          let targetPixelArray = targetData.data
+            let targetData = ctx.getImageData(0, 0, this.width, this.height)
+            let targetPixelArray = targetData.data
 
-          // 4 components - red, green, blue and alpha
-          let length = targetPixelArray.length
+            // 4 components - red, green, blue and alpha
+            let length = targetPixelArray.length
 
-          // Iterate and apply layer color
-          for (var i = 3; i < length; i+= 4) {
+            // Iterate and apply layer color
+            for (var i = 3; i < length; i+= 4) {
 
-            if (imagePixelArray[i] > 0) {
-              targetPixelArray[i-3] = layerColor[0];
-              targetPixelArray[i-2] = layerColor[1];
-              targetPixelArray[i-1] = layerColor[2]
-              targetPixelArray[i] = 255;
+              if (imagePixelArray[i] > 0) {
+                targetPixelArray[i-3] = layerColor[0];
+                targetPixelArray[i-2] = layerColor[1];
+                targetPixelArray[i-1] = layerColor[2]
+                targetPixelArray[i] = 255;
+              }
+
             }
 
-          }
+            ctx.putImageData(targetData, 0, 0);
 
-          ctx.putImageData(targetData, 0, 0);
+            // Trigger refresh measurements
+            Tegaki.donePainting();
 
-          // Trigger refresh measurements
-          Tegaki.donePainting();
+            // If user waited on the layer while segmenting, change tool to brush
+            if (_this.currentLayerTypeIndex === switchToIndex) {
+              _this.setCurrentTool(0, layerTypeToSwitchTo, switchToIndex)
+            }
 
-          // If user waited on the layer while segmenting, change tool to brush
-          if (_this.currentLayerTypeIndex === switchToIndex) {
-            _this.setCurrentTool(0, layerTypeToSwitchTo, switchToIndex)
-          }
-
-					NProgress.done()
+  					NProgress.done()
  
-          layerType.isSegmenting = false
+            layerType.isSegmenting = false
+
+          };
+
+          // Set URL on image
+          img.src = url;
+
 
         };
 
-        // Set URL on image
-        img.src = url;
-
-
-      };
-
       
-      xhr.send(fd)
+        xhr.send(fd)
+        
+      })
+      
       
     },
 
@@ -1139,6 +1152,286 @@ export default  {
 		  }
 
     },
+    
+
+    anonymizeDicom (file, fileCb) {
+      
+      /// globals
+      var options = {
+        maxFilesPerZip : 5000,
+        // defaults for checkbox options
+        mapOptions: {
+          noAnonymization: false,
+          // set true to avoid removing private tags
+          // keepPrivateTags: false,
+          // set true for strict tag removal:
+          // remove everything in header except what dcmjs.org has as a whitelist
+          keepWhitelistedTagsOnly: true,
+          // set true to keep files where a mapping instruction failed (no lookup value found)
+          // the default is false because files failing mapping instructions can leak private
+          // information. (and if no mapping is specified in editor, this is not relevant)
+          keepMappingFailures: false,
+          // whether or not to fail if input file is not as deeply nested as required by
+          // the queried folder component
+          requireDirectoryMatch: false,
+          keepPrivateTags: false
+        },
+        // maybe even present the user the file path of first
+        // dicom found and ask them to enter this string below?
+        filePathPattern: 'trialname/centersubj/dicomstudyid/dicomseriesid/',
+        // this number describes how many path components (of the PROCESSED file path) are grouped
+        // in a single zip file. The zip files are labeled according to the grouping.
+        zipGroupLevel: 2
+      };
+
+      var csvMappingTable = {header: [], data: []};
+      var nonBracketDumpedVRs = ['US', 'UL', 'SS', 'SL', 'FL', 'FD', 'OB', 'OF', 'OW', ];
+        
+      
+      // converts a jquery dom object into a
+      // string in dcmdump format.
+      var dicomDOMToDump = function($dicomDOM) {
+        var dump = '';
+        $dicomDOM.find('data-set').find("element").each(function() {
+          var tag = this.getAttribute('tag');
+          var vr = this.getAttribute('vr');
+          var value = this.innerHTML;
+          // moved private tag handling to mapper
+          // TODO: move pixel data handling to the mapper
+          var pixelData = (tag === "7fe0,0010");
+
+          // NOTE: For pixelData, this only works if the mapper does nothing to it.
+          // That would be kind of expected behaviour though.
+          // NOTE2: We shouldn't hard-code pixelData assignment to a file here, as dicomdump
+          // creates multiple values for multiple elements.
+          // The only possible hack would be to auto-increment a N starting at 0 and use
+          // '.N.raw' suffix for every pixelData.
+          var bracketed = nonBracketDumpedVRs.indexOf(vr) === -1;
+          dump += '(' + tag + ') ' + vr + ' ' + (bracketed ? '[':'') + value + (bracketed ? ']':'') + '\n';
+        });
+        return(dump);
+      };
+      
+      // returns xml string from dcmdump output string
+      var dumpToXML = function(dumpLines) { 
+          
+        function isPrivate(tag) {
+          return (Number("0x"+tag[3]) % 2 === 1);
+        }
+
+        var xml = '';
+        xml += '<?xml version="1.0" encoding="ISO-8859-1"?>\n';
+        xml += '<file-format>\n';
+        xml += '<meta-header xfer="1.2.840.10008.1.2.1" name="Little Endian Explicit">\n';
+
+        var insideTopPrivateSq = false;
+        $.each(dumpLines, function (index, line) {
+          // Are we inside a sequence (or non-element entry)?
+          var insideSq = line[0] !== '(';
+          // map to xml depending on the syntax of dcmdump
+          // TODO: this could be improved with a dedicated dcmtk utility
+          line = line.trim();  // remove spaces (indent)
+          if (line.length === 0) { return; }; // skip blank lines
+          // That's bad because it keeps stale item & sq delimiters.
+          // if (line.search('Unknown Tag & Data') != -1) {
+          //   // skip privates
+          //   // TODO: better way to handle unknown private data?
+          //   return;
+          // }
+          line = line.replace('&', '&amp'); // escape special characters
+          if (line.search('# Dicom-Data-Set') != -1) {
+            // special flag for start of dataset
+            xml += '</meta-header>\n';
+            xml += '<data-set xfer="1.2.840.10008.1.2" name="Little Endian Implicit">\n';
+            return;
+          }
+          if (line[0] === '#') { return; }; // skip comments
+          if (line[0] === '(') {
+            // parse components of a real entry
+            var parts = line.split(' ');
+            var tag = parts[0].substring(1,10); // first "gggg,eeee"
+            var vr = parts[1];
+            var vm = parts[parts.length-2];
+            var len = parts[parts.length-3];
+            len = len.substring(0,len.length-1);
+            var name = parts[parts.length-1];
+
+            // This is a fix for private sequences that will otherwise leave stray delimiters behind.
+            // TODO: Private tags should not be removed here, or they should be added back later if desired.
+
+            // Skip private tags.
+            if (isPrivate(tag)) {
+              // Are we starting a private sequence? Indicate before skipping.
+              if (!insideSq && vr === 'SQ') {
+                insideTopPrivateSq = true;
+              }
+              return;
+            }
+
+            // Have we been inside a private top level SQ before?
+            if (insideTopPrivateSq) {
+              // Are we still inside? Skip.
+              if (insideSq) {
+                return;
+              } else {
+                // Ending a private sequence - skip delimiter.
+                insideTopPrivateSq = false;
+                // Return if it's a SQ delim item (sanity check).
+                if (tag === 'fffe,e0dd') {
+                  return;
+                }
+              }
+            }
+
+            var value = '';
+            if (vr === '??') { vr = "UN"; }
+            if (line.search('(no value available)') != -1) {
+              // handle empty tags
+              len = 0;
+            } else if (vr === 'SQ' || vr === 'na') {
+              // handle sequences and items
+              len = 0;
+            } else {
+              // look for standard data values in square brackets
+              var openBracket = line.indexOf('[');
+              var closeBracket = line.lastIndexOf(']');
+              if (openBracket > 0 && closeBracket > 0) {
+                value = line.substring(openBracket+1, closeBracket);
+              } else {
+                // assuming US, UL, (SL) which are not bracketed
+                value = parts[2];
+                if (nonBracketDumpedVRs.indexOf(vr) < 0) {
+                  console.log('Non-bracketed value, line is:');
+                  console.log(line);
+                }
+              }
+            }
+
+            xml += '<element tag="' + tag + '" ';
+            xml += 'vr="' + vr + '" ';
+            xml += 'vm="' + vm + '" ';
+            xml += 'len="' + len + '" ';
+            xml += 'name="' + name + '">';
+            xml += value + '</element>\n';
+        }
+        });
+
+        xml += '</data-set>\n';
+        xml += '</file-format>\n';
+
+        return(xml);
+      };
+      
+      // returns xml string
+      var xmlFromDICOM = function(file, filePath) {
+        var dumpPath = '/uploadedFile.txt';
+
+        // create a dump file
+        // - a <fileName>.0.raw file will be created in ./
+        // override 'print' to capture output in dumpLines
+        var dumpLines = [];
+        Module.print = function(s) { dumpLines.push(s); };
+        var returnCode = dcmjs.utils.execute('dcmdump', ['--print-all', '--write-pixel', '.', '--no-uid-names', filePath]);
+        Module.print = console.log;
+
+        // The check below kind of works, but if the dataset has multiple pixeldata,
+        // dcmdump will store them in consequtive names (".N.raw") and this may
+        // not be a sufficient check.
+        // For now, comment out as that may gain us speed.
+        // var rawFilePath = filePath + ".0.raw";
+        // if (!dcmjs.utils.fileExists(rawFilePath)) {
+        //   return null;
+        // }
+
+        return (dumpToXML(dumpLines));
+      };
+      
+      // process one file from the input set.
+      var organize = function(reader, file, filePath) {
+        function findRawFileExts(dump) {
+          // return dump.match(/\/uploadedFile.dcm.\d.raw/g);
+          return dump.match(/\.\d\.raw/g);
+        }
+
+        // var fileName = file.name;
+        var uploadedFilePath = './uploadedFile.dcm';
+        // var rawFilePath = uploadedFilePath + '.0.raw';
+        var organizedXMLFilePath = './organizedObject.xml';
+        var organizedDICOMFilePath = './organizedObject.dcm';
+
+        // FIXME: this does NOT delete all rawFilePaths if dcmdump has created
+        // multiple ('.N.raw')
+        // Delete anything left from previous runs
+        // dcmjs.utils.deleteFiles([uploadedFilePath, rawFilePath, organizedXMLFilePath, organizedDICOMFilePath]);
+        dcmjs.utils.deleteFiles([uploadedFilePath, organizedXMLFilePath, organizedDICOMFilePath]);
+
+        console.log('Writing...');
+        var uploadedObject = new Int8Array(reader.result);
+        FS.writeFile(uploadedFilePath, uploadedObject, {encoding: "binary"});
+
+        var xmlString = xmlFromDICOM(file, uploadedFilePath);
+
+        if (xmlString !== null) {
+          /*
+           * result.dicom
+           * result.status.mapFailed = true if no corresponding value found in mapping table
+           * result.status.filePathFailed = true if input file path didn't match
+           *     expected file path pattern
+           * result.filePath (new file path)
+           * result.zipFileID
+           * result.status.log
+           */
+          var result = mapDom(xmlString, uploadedFilePath, csvMappingTable, {
+                        print: (s) => { console.log(s) },
+                        status: (s) => { console.log(s) },
+                        mapOptions: options.mapOptions,
+                        filePathPattern: options.filePathPattern,
+                        zipGroupLevel: options.zipGroupLevel
+                      });
+
+          if (!options.mapOptions.keepMappingFailures && result.status.mapFailed) {
+            // mapping failed. For the risk of privacy info retained, we don't keep file
+            // by default
+            status ('skipping DICOM file because mapping failed for ' + file.name);
+            finalizeFile(file, undefined, undefined, undefined);
+          } else {
+            var $newDicomDOM = result.dicom;
+
+            // convert to dump and save
+            var dump = dicomDOMToDump($newDicomDOM);
+            FS.writeFile('./dump.txt', dump, {encoding: 'utf8'} );
+            
+            // perform the dump to dcm
+            dcmjs.utils.execute('dump2dcm', ['--ignore-errors', "./dump.txt", organizedDICOMFilePath]);
+            
+            var organizedObject = FS.readFile(organizedDICOMFilePath, {encoding: 'binary'} );
+            
+            // Remove additional ".N.raw" files. Doing that here to minimize impact on existing code which
+            // needs to be completely restructured anyway.
+            var rawFilePaths = findRawFileExts(dump).map(function(ext) { return uploadedFilePath + ext; });
+            dcmjs.utils.deleteFiles(rawFilePaths);
+            
+            console.log(result.filePath + "  of size " + organizedObject.length);
+            
+            var zipContents = new Uint8Array(organizedObject);
+            let blob = new Blob([new Uint8Array(zipContents)]);
+            let file = new File([blob], "file.dcm");
+            
+            fileCb(file)
+            
+          }
+        }
+        else {
+          // invalid file
+          status ('skipping non-DICOM file because no raw file generated for ' + file.name);
+          finalizeFile(file, undefined, undefined, undefined);
+        }
+      };
+      
+      dcmjs.utils.readFile(file, organize);
+      
+    },
+    
 
     showKeyboardShortcuts () {
 
