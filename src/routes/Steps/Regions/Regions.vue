@@ -905,14 +905,15 @@ export default  {
             // Trigger refresh measurements
             Tegaki.donePainting();
 
+            layerType.isSegmenting = false;
+            
             // If user waited on the layer while segmenting, change tool to brush
-            //if (_this.currentLayerTypeIndex === currentLayerTypeIndex) {
+            if (_this.currentLayerTypeIndex === currentLayerTypeIndex) {
               _this.setCurrentTool(0, layerType, currentLayerTypeIndex)
-              //}
+            }
 
   					NProgress.done()
 
-            layerType.isSegmenting = false;
             Tegaki.isWaitingForSegmentationPoint = false
           };
 
@@ -975,7 +976,7 @@ export default  {
     
       // Get DICOM for the current slice
       let sliceIndex = this.$root.selectedSliceIndex
-        
+          
       this.getCurrentSliceFileAnon( (file) => {
       
         let dcmFilename = 'slice_'+sliceIndex+'.dcm'
@@ -1051,15 +1052,16 @@ export default  {
 
             // Trigger refresh measurements
             Tegaki.donePainting();
+            
+            layerType.isSegmenting = false
 
             // If user waited on the layer while segmenting, change tool to brush
-            //if (_this.currentLayerTypeIndex === switchToIndex) {
+            if (_this.currentLayerTypeIndex === switchToIndex) {
               _this.setCurrentTool(0, layerTypeToSwitchTo, switchToIndex)
-              //}
+            }
 
   					NProgress.done()
  
-            layerType.isSegmenting = false
 
           };
 
@@ -1418,7 +1420,6 @@ export default  {
             let file = new File([blob], "file.dcm");
             
             fileCb(file)
-            
           }
         }
         else {
