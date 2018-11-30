@@ -906,9 +906,9 @@ export default  {
             Tegaki.donePainting();
 
             // If user waited on the layer while segmenting, change tool to brush
-            if (_this.currentLayerTypeIndex === currentLayerTypeIndex) {
+            //if (_this.currentLayerTypeIndex === currentLayerTypeIndex) {
               _this.setCurrentTool(0, layerType, currentLayerTypeIndex)
-            }
+              //}
 
   					NProgress.done()
 
@@ -975,7 +975,7 @@ export default  {
     
       // Get DICOM for the current slice
       let sliceIndex = this.$root.selectedSliceIndex
-          
+        
       this.getCurrentSliceFileAnon( (file) => {
       
         let dcmFilename = 'slice_'+sliceIndex+'.dcm'
@@ -1053,9 +1053,9 @@ export default  {
             Tegaki.donePainting();
 
             // If user waited on the layer while segmenting, change tool to brush
-            if (_this.currentLayerTypeIndex === switchToIndex) {
+            //if (_this.currentLayerTypeIndex === switchToIndex) {
               _this.setCurrentTool(0, layerTypeToSwitchTo, switchToIndex)
-            }
+              //}
 
   					NProgress.done()
  
