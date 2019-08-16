@@ -50,7 +50,7 @@
 
   #cs-footer.ui.text.container
     
-    p &copy; Jonathan Afilalo and Louis Mullie, 2014-2018
+    p &copy; Jonathan Afilalo and Louis Mullie, 2014-2019
 
 modal(name='hello-world') Testing
     
