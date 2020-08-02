@@ -6,7 +6,7 @@
   header
     #brand.header-section
       a( href = '#' @click.prevent = "discardWork" style = 'outline: none' )
-        img( src = '../../assets/logo-text-only.svg' height = '25' )
+        img( src = 'https://coreslicer.com/static/logo-text-only.5ed932e.svg' height = '25' )
 
     #steps-navigation
       #steps-previous.header-section

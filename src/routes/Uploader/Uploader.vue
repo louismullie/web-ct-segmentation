@@ -2,7 +2,7 @@
 #cs-container.ui.inverted.vertical.center.aligned.segment
   #cs-hero.ui.text.container
     a( v-link = "{ path: '/' }" ).Logo
-      img( src = '../../assets/logo-with-brand.svg' height = '50' )
+      img( src = 'https://coreslicer.com/static/logo-with-brand.4a2e415.svg' height = '50' )
 
     br
     p(style="font-size:1rem")  CoreSlicer is for research and educational purposes only. <br> By using this website, you agree to our <u><a href="https://github.com/louismullie/coreslicer/blob/master/TERMS.md" />terms of use.</a></u>
