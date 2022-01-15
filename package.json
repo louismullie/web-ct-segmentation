@@ -39,7 +39,7 @@
     "less": "^3.12.2",
     "less-loader": "^2.2.3",
     "ora": "^0.2.0",
-    "shelljs": "^0.6.0",
+    "shelljs": "^0.8.5",
     "url-loader": "^1.1.2",
     "vue-hot-reload-api": "^1.2.0",
     "vue-html-loader": "^1.0.0",
