@@ -1,6 +1,6 @@
 # Note: This version of CoreSlicer is deprecated!
 
-Find CoreSlicer V2 at https://www.coreslicer.com
+Find the new version of CoreSlicer at https://www.coreslicer.com
 
 <hr>
 
