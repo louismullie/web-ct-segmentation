@@ -1,7 +1,5 @@
 # Please note: This software is outdated, unsupported, and no longer actively maintained.
 
-# A Web Toolkit for Analytic Morphomics
-
 This repository showcases a web interface for morphomic analysis of computed tomography (CT) scan images. The software aims to bridge the gap between researchers and clinicians with an interest in analytic morphomics by providing a cross-platform, open-source interface for visualization of morphomic data and development of new morphomic markers.
 
 The software lives in 2 main locations:
