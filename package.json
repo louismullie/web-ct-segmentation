@@ -1,7 +1,7 @@
 {
-  "name": "CoreSlicer",
+  "name": "QuickSlicer",
   "version": "1.0.0",
-  "description": "A Vue.js project",
+  "description": "",
   "author": "Christophe Marois <christophemarois@gmail.com>",
   "private": true,
   "scripts": {
