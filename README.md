@@ -39,7 +39,7 @@ Then, ensure the required dependencies are installed:
 ```bash
 
 # install dependencies
-cd quickslicer && npm install
+cd web-ct-segmentation && npm install
 
 ```
 
@@ -49,7 +49,7 @@ To serve the application with hot-reloading on localhost, run:
 
 ```bash
 
-cd quickslicer && npm run dev
+cd web-ct-segmentation && npm run dev
 
 ```
 
@@ -96,7 +96,7 @@ from read_dicom import read_dcm
 app = Flask(__name__)
 
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
-UPLOAD_FOLDER = os.path.join(APP_ROOT, '../tmp/quickslicer')
+UPLOAD_FOLDER = os.path.join(APP_ROOT, '../tmp/web-ct-segmentation')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 def import_slice_file(request, index, upload_folder):
@@ -168,7 +168,7 @@ On any screen, tap the "?" button at the bottom-left of the interface to display
 
 ## User agreement
 
-This software is for research and educational use only. It may not be used for commercial or clinical applications. By using the software, you agree to our terms of use and privacy policy, which can be found [here](https://github.com/louismullie/quickslicer/blob/master/TERMS.md).2
+This software is for research and educational use only. It may not be used for commercial or clinical applications. By using the software, you agree to our terms of use and privacy policy, which can be found [here](https://github.com/louismullie/web-ct-segmentation/blob/master/TERMS.md).
 
 ## License
 
