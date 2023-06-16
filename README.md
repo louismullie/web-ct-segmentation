@@ -1,6 +1,4 @@
-# Please note: This software is no longer maintained. 
-
-<hr>
+# Please note: This software is outdated, unsupported, and no longer actively maintained.
 
 # A Web Toolkit for Analytic Morphomics
 
