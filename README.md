@@ -1,9 +1,3 @@
-# Note: This version of CoreSlicer is deprecated!
-
-Find the new version of CoreSlicer at https://www.coreslicer.com
-
-<hr>
-
 # CoreSlicer: A Web Toolkit for Analytic Morphomics
 
 CoreSlicer is a web interface for morphomic analysis of computed tomography (CT) scan images. CoreSlicer aims to bridge the gap between researchers and clinicians with an interest in analytic morphomics by providing a cross-platform, open-source interface for visualization of morphomic data and development of new morphomic markers.
