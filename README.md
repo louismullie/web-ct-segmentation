@@ -1,15 +1,19 @@
-# CoreSlicer: A Web Toolkit for Analytic Morphomics
+# Please note: This software is no longer maintained. 
 
-CoreSlicer is a web interface for morphomic analysis of computed tomography (CT) scan images. CoreSlicer aims to bridge the gap between researchers and clinicians with an interest in analytic morphomics by providing a cross-platform, open-source interface for visualization of morphomic data and development of new morphomic markers.
+<hr>
 
-CoreSlicer lives in 2 main locations:
+# A Web Toolkit for Analytic Morphomics
 
-- A **public web interface**, located at https://www.coreslicer.com, which allows researchers and clinicians to perform morphomic measurements in the browser without installing any additional software
+This repository showcases a web interface for morphomic analysis of computed tomography (CT) scan images. The software aims to bridge the gap between researchers and clinicians with an interest in analytic morphomics by providing a cross-platform, open-source interface for visualization of morphomic data and development of new morphomic markers.
+
+The software lives in 2 main locations:
+
+- A **public web interface**, which allows researchers and clinicians to perform morphomic measurements in the browser without installing any additional software
 - An **open-source toolkit**, maintained here, which allows researchers and clinicians to rapidly prototype morphomic markers via a flexible JSON plugin API 
 
 ## Requirements
 
-CoreSlicer is designed for and optimized for Google Chrome. Other browsers are not supported. A minimum of 4GB of RAM is recommended for optimal user experience.
+The software is designed for and optimized for Google Chrome. Other browsers are not supported. A minimum of 4GB of RAM is recommended for optimal user experience.
 
 ## Introduction
 
@@ -39,7 +43,7 @@ Then, ensure the required dependencies are installed:
 ```bash
 
 # install dependencies
-cd coreslicer && npm install
+cd quickslicer && npm install
 
 ```
 
@@ -49,7 +53,7 @@ To serve the application with hot-reloading on localhost, run:
 
 ```bash
 
-cd coreslicer && npm run dev
+cd quickslicer && npm run dev
 
 ```
 
@@ -96,7 +100,7 @@ from read_dicom import read_dcm
 app = Flask(__name__)
 
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
-UPLOAD_FOLDER = os.path.join(APP_ROOT, '../tmp/coreslicer')
+UPLOAD_FOLDER = os.path.join(APP_ROOT, '../tmp/quickslicer')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 def import_slice_file(request, index, upload_folder):
@@ -168,7 +172,7 @@ On any screen, tap the "?" button at the bottom-left of the interface to display
 
 ## User agreement
 
-CoreSlicer is for research and educational use only. It may not be used for commercial or clinical applications. By using CoreSlicer, you agree to our terms of use and privacy policy, which can be found [here](https://github.com/louismullie/coreslicer/blob/master/TERMS.md).2
+This software is for research and educational use only. It may not be used for commercial or clinical applications. By using the software, you agree to our terms of use and privacy policy, which can be found [here](https://github.com/louismullie/quickslicer/blob/master/TERMS.md).2
 
 ## License
 
