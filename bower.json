@@ -1,5 +1,5 @@
 {
-  "name": "coreslicer",
+  "name": "quickslicer",
   "ignore": [
     "**/.*",
     "node_modules",
